@@ -4,7 +4,7 @@ package com.example.popup.model.domain.common
  * Represents the backend model for a UTCTime format
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 class UTCTime (

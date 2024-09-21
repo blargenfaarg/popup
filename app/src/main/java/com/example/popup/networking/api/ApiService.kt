@@ -26,7 +26,7 @@ import com.example.popup.model.response.SearchResult
  * a single api response
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 class ApiService(

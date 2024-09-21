@@ -7,7 +7,7 @@ import com.example.popup.model.domain.common.PostType
  * Represents the backend model for a user
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 data class User(

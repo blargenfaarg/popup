@@ -6,7 +6,7 @@ import java.io.File
  * Describes a filetype to be used in a multipart form data http request
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/19/2024
  */
 data class HttpFile (

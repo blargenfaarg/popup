@@ -6,7 +6,7 @@ import com.example.popup.model.domain.Post
  * Represents the response object returned when searching for posts
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 data class SearchResult(

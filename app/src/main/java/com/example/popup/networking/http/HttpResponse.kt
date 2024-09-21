@@ -4,7 +4,7 @@ package com.example.popup.networking.http
  * The response data class to be returned from the http request builder
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 data class HttpResponse(

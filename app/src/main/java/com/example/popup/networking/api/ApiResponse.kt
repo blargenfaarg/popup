@@ -6,7 +6,7 @@ import com.example.popup.model.response.Error
  * A response from the api containing either expected data, or error
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 class ApiResponse<T>(

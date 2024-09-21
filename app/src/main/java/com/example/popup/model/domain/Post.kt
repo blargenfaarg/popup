@@ -8,7 +8,7 @@ import com.example.popup.model.domain.common.UTCTime
  * Represents the backend model for a post
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 data class Post(

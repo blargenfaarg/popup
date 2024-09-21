@@ -5,7 +5,7 @@ package com.example.popup.networking.http
  * in order to create and send HTTP request for normal (CRUD) type calls
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/15/2024
  */
 interface IHttpRequestBuilder {

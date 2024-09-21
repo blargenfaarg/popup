@@ -4,7 +4,7 @@ package com.example.popup.networking.api
  * Http routes for the api
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/21/2024
  */
 object ApiRoutes {

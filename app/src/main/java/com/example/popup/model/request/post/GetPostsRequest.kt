@@ -6,7 +6,7 @@ import com.example.popup.model.domain.common.Location
  * Represents the request object used to get the posts for a user
  *
  * @author Benjamin Michael
- * Project: KotlinApi
+ * Project: Pop-Up
  * Created on: 9/20/2024
  */
 data class GetPostsRequest(
