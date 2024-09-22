@@ -19,6 +19,7 @@ import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.model.request.user.UpdateUserRequest
 import com.example.popup.model.response.Error
 import com.example.popup.model.response.SearchResult
+import java.io.File
 
 /**
  * Service that offers an easy way to interact with the api. Takes in the required parameter to send the http call,
@@ -88,13 +89,13 @@ class ApiService(
      * @param image the profile picture for the user account
      * @return the api response containing the created user account, or an error response
      */
-    suspend fun createUser(request: CreateUserRequest, image: HttpFile? = null): ApiResponse<User> {
+    suspend fun createUser(request: CreateUserRequest, image: File? = null): ApiResponse<User> {
         val rb = httpRequestBuilder.post(url = ApiRoutes.USERS_CREATE)
             .header("Content-Type", "multipart/form-data")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
         if (image != null) {
-            rb.file(file = image)
+            rb.file(file = HttpFile.fromFile(image, "image"))
         }
 
         val response = rb.send()
@@ -131,13 +132,13 @@ class ApiService(
      * @param image the updated profile picture for the user account
      * @return the api response containing the updated user account, or an error response
      */
-    suspend fun updateUser(request: UpdateUserRequest, image: HttpFile? = null): ApiResponse<User> {
+    suspend fun updateUser(request: UpdateUserRequest, image: File? = null): ApiResponse<User> {
         val rb = httpRequestBuilder.put(url = ApiRoutes.USERS_UPDATE)
             .header("Authorization", "Bearer $sessionToken")
             .json(request)
 
         if (image != null) {
-            rb.file(file = image)
+            rb.file(file = HttpFile.fromFile(image, "image"))
         }
 
         val response = rb.send()
@@ -185,13 +186,13 @@ class ApiService(
      * @param images list of images to be uploaded along with the post
      * @return api response containing either the Post object created, or an error response
      */
-    suspend fun createPost(request: CreatePostRequest, images: MutableList<HttpFile>? = null): ApiResponse<Post> {
+    suspend fun createPost(request: CreatePostRequest, images: MutableList<File>? = null): ApiResponse<Post> {
         val rb = httpRequestBuilder.post(url = ApiRoutes.POSTS_CREATE)
             .header("Authorization", "Bearer $sessionToken")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
         images?.forEach { image ->
-            rb.file(file = image)
+            rb.file(file = HttpFile.fromFile(image, "images"))
         }
 
         val response = rb.send()
@@ -220,13 +221,13 @@ class ApiService(
      * @param images list of images to be uploaded along with the post
      * @return api response containing either the Post object updated, or an error response
      */
-    suspend fun updatePost(request: UpdatePostRequest, images: MutableList<HttpFile>? = null): ApiResponse<Post> {
+    suspend fun updatePost(request: UpdatePostRequest, images: MutableList<File>? = null): ApiResponse<Post> {
         val rb = httpRequestBuilder.put(url = ApiRoutes.POSTS_UPDATE)
             .header("Authorization", "Bearer $sessionToken")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
         images?.forEach { image ->
-            rb.file(file = image)
+            rb.file(file = HttpFile.fromFile(image, "images"))
         }
 
         val response = rb.send()
