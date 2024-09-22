@@ -3,6 +3,8 @@ package com.example.popup.networking.http
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -122,12 +124,14 @@ class OkHttpRequestBuilder(
 
         val request = requestBuilder.build()
 
-        val response = client.newCall(request).execute()
-        return HttpResponse(
-            responseCode = response.code(),
-            contentType = response.body()?.contentType().toString(),
-            responseBody = response.body()?.string() ?: ""
-        )
+        return withContext(Dispatchers.IO) {
+            val response = client.newCall(request).execute()
+            HttpResponse(
+                responseCode = response.code(),
+                contentType = response.body()?.contentType().toString(),
+                responseBody = response.body()?.string() ?: ""
+            )
+        }
     }
 
     /**

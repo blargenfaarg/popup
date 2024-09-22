@@ -11,18 +11,20 @@ import com.example.popup.model.response.Error
  */
 class ApiResponse<T>(
     val data: T? = null,
-    val error: Error? = null
+    val error: Error? = null,
+    val success: Boolean = false
 ) {
+
     companion object {
         /**
          * Craft a success api response with some return data
          */
-        fun <T> success(data: T): ApiResponse<T> = ApiResponse(data = data)
+        fun <T> success(data: T): ApiResponse<T> = ApiResponse(data = data, success = true)
 
         /**
          * Craft an empty success api response
          */
-        fun <T> success(): ApiResponse<T> = ApiResponse()
+        fun <T> success(): ApiResponse<T> = ApiResponse(success = true)
 
         /**
          * Craft a failure api response with an error
@@ -38,7 +40,12 @@ class ApiResponse<T>(
     /**
      * Check if the request was successful
      */
-    fun wasSuccessful(): Boolean = error == null
+    fun wasSuccessful(): Boolean = success
+
+    /**
+     * Check if the response has some error to show
+     */
+    fun hasErrorResponse(): Boolean = error != null
 
     override fun toString(): String {
         return "ApiResponse(data = $data, error = $error)"
