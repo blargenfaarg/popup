@@ -1,5 +1,8 @@
 package com.example.popup.ui.screens.login
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.networking.api.ApiService
@@ -29,8 +32,8 @@ class LoginViewModel @Inject constructor(
         )
     }
 
-    var username: String = ""
-    var password: String = ""
+    var username by mutableStateOf("")
+    var password by mutableStateOf("")
 
     /**
      * Receive an event from the UI and decide what to do with it
