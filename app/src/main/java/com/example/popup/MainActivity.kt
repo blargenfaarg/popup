@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
             PopupTheme {
                 // A surface container using the 'background' color from the theme
                 navController = rememberNavController()
-                SetupNavGragh(navController = navController)
+                SetupNavGraph(navController = navController)
             }
         }
     }

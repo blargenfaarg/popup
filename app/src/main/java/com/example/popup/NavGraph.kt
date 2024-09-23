@@ -11,30 +11,30 @@ import com.example.popup.mainui.MapScreen
 import com.example.popup.mainui.ProfileScreen
 
 @Composable
-fun SetupNavGragh(
+fun SetupNavGraph(
     navController: NavHostController
 ){
     NavHost(
         navController = navController,
-        startDestination = Screen.mapScreen.route
+        startDestination = Screen.MapScreen.route
     ){
         composable(
-            route = Screen.mapScreen.route
+            route = Screen.MapScreen.route
         ) {
             MapScreen(navController)
         }
         composable(
-            route = Screen.listScreen.route
+            route = Screen.ListScreen.route
         ) {
             ListScreen(navController)
         }
         composable(
-            route = Screen.createScreen.route
+            route = Screen.CreateScreen.route
         ) {
             CreateScreen(navController)
         }
         composable(
-            route = Screen.profileScreen.route
+            route = Screen.ProfileScreen.route
         ) {
             ProfileScreen(navController)
         }

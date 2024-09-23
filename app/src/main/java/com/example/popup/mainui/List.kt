@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedFilterChip
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -33,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.popup.R
 import com.example.popup.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
     navController: NavController
@@ -48,74 +52,23 @@ fun ListScreen(
             .align(Alignment.TopCenter)
             .padding(15.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .offset(x = 170.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.lil_triangle),//TODO: Find proper image from R
-                    contentDescription = "Map",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .offset(x = -8.dp)
-                        .align(Alignment.CenterEnd)
-                )
-                OutlinedButton(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    onClick = { /*TODO*/ }) {//TODO:Pop-up list if selections for filter
-                    Text("Filter")
-                }
+            Box (Modifier.offset(x = 210.dp)) {
+                ElevatedFilterChip(
+                    selected = false,
+                    onClick = { /*TODO*/ },
+                    label = { Text(text = "Filter") })
             }
-            Box(
-                modifier = Modifier
-                    .offset(x = 170.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.lil_triangle),//TODO: Find proper image from R
-                    contentDescription = "Map",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .offset(x = -8.dp)
-                        .align(Alignment.CenterEnd)
-                )
-                OutlinedButton(
-                    modifier = Modifier
-                        .padding(8.dp),
-                    onClick = { /*TODO*/ }) {//TODO:Pop-up list if selections for filter
-                    Text(" Sort ")
-                }
+            Box  (Modifier.offset(x = 220.dp)){
+                ElevatedFilterChip(
+                    selected = false,
+                    onClick = { /*TODO*/ },
+                    label = { Text(text = "Sort") })
             }
         }
         Row(modifier = Modifier
-            .fillMaxWidth()
             .align(Alignment.BottomCenter)
-            .padding(15.dp)
         ) {
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.mapScreen.route) }) {//Nav to other screens
-                Text("Map")
-            }
-            FilledTonalButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.listScreen.route) }) {//Nav to other screens
-                Text("List")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.createScreen.route) }) {// Nav to other screens
-                Text("Create")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.profileScreen.route) }) {//Nav to other screens
-                Text("Profile")
-            }
+            LoadNavBar(navController = navController)
         }
     }
 }

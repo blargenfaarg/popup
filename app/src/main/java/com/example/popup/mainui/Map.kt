@@ -24,42 +24,25 @@ import androidx.navigation.compose.rememberNavController
 import com.example.popup.Screen
 
 @Composable
-fun MapScreen(
-    navController: NavController
-) {
+fun MapScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
         )
     {
-        Row(modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(15.dp)
-        ) {
-            FilledTonalButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = { navController.navigate(route = Screen.mapScreen.route) }) {//Nav to other screens
-                Text("Map")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.listScreen.route) }) {//Nav to other screens
-                Text("List")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.createScreen.route) }) {//Nav to other screens
-                Text("Create")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.profileScreen.route) }) {//Nav to other screens
-                Text("Profile")
+        LoadNavBar(navController = navController)
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.White)
+        )
+        {
+            Row(modifier = Modifier
+                .align(Alignment.BottomCenter)
+            ) {
+                LoadNavBar(navController = navController)
             }
         }
     }

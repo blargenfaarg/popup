@@ -44,7 +44,7 @@ fun CreateScreen(
         Row(modifier = Modifier
             .align(Alignment.BottomCenter)
             .padding(15.dp)
-            .offset(y = -70.dp)
+            .offset(y = -100.dp)
         ) {
             ExtendedFloatingActionButton(
                 onClick = { },
@@ -52,35 +52,13 @@ fun CreateScreen(
                 text = { Text(text = "Create Event") },
             )
         }
+
         Row(modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(15.dp)
         ) {
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.mapScreen.route) }) {//Nav to other screens
-                Text("Map")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.listScreen.route) }) {//Nav to other screens
-                Text("List")
-            }
-            FilledTonalButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.createScreen.route) }) {//Nav to other screens
-                Text("Create")
-            }
-            OutlinedButton(
-                modifier = Modifier
-                    .width(90.dp),
-                onClick = {navController.navigate(route = Screen.profileScreen.route) }) {//Nav to other screens
-                Text("Profile")
-            }
+            LoadNavBar(navController = navController)
         }
+
     }
 }
 
