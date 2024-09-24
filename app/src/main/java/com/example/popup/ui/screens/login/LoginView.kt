@@ -15,7 +15,10 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -71,7 +74,7 @@ fun LoginView(
         Text(
             text = "Pop-Up",
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = 40.sp,
         )
         Spacer(
             modifier = Modifier
@@ -84,6 +87,7 @@ fun LoginView(
                 viewModel.onEvent(LoginViewEvent.OnUsernameChange(it))
             }
         )
+        Spacer(modifier = Modifier.height(4.dp))
         LoginTextField(
             text = viewModel.password,
             labelText = "Password",
@@ -92,16 +96,16 @@ fun LoginView(
             },
             passwordField = true
         )
-        Button(
+        OutlinedButton(
             onClick = {
                 viewModel.onEvent(LoginViewEvent.OnLoginClicked)
             },
             modifier = Modifier
-                .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors()
         ) {
-            Text(text = "Login", color = Color.White)
+            Text(text = "Login")
         }
     }
 }
@@ -132,7 +136,6 @@ fun LoginTextField(
         },
         modifier = modifier
             .padding(horizontal = 25.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
             .padding(16.dp),
         trailingIcon = {
             if (passwordField) {
