@@ -8,7 +8,7 @@ package com.example.popup.networking.api
  * Created on: 9/21/2024
  */
 object ApiRoutes {
-    private const val BASE_URL = "http://ciloot.lol:8080/api"
+    private const val BASE_URL = "https://www.ciloot.lol/api"
 
     private const val USERS = "$BASE_URL/users"
     const val USERS_GET = USERS
