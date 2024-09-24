@@ -14,7 +14,7 @@ import com.example.popup.model.domain.common.UTCTime
 data class Post(
     val id: Long,
     val title: String,
-    val description: String,
+    val description: String?,
     val location: Location,
     val distance: Double?,
     val type: PostType,

@@ -1,5 +1,3 @@
-import com.android.build.gradle.internal.utils.isKotlinKaptPluginApplied
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)

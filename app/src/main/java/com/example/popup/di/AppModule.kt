@@ -1,6 +1,7 @@
 package com.example.popup.di
 
 import com.example.popup.networking.api.ApiService
+import com.example.popup.networking.api.IApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +23,5 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesApiService(): ApiService = ApiService()
+    fun providesApiService(): IApiService = ApiService()
 }

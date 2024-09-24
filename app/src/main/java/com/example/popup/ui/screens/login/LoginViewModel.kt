@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.networking.api.ApiService
+import com.example.popup.networking.api.IApiService
 import com.example.popup.ui.util.APopUpViewModel
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.UiRoutes
@@ -22,7 +23,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: IApiService
 ): APopUpViewModel<LoginViewEvent>() {
 
     companion object {

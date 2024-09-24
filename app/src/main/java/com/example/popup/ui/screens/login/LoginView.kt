@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.popup.mock.MockApiService
 import com.example.popup.ui.theme.PopupTheme
 import com.example.popup.ui.util.UiEvent
 
@@ -162,10 +163,8 @@ fun LoginTextField(
 fun LoginViewPreview() {
     PopupTheme {
         LoginView(
-            onNavigate = {
-
-            },
-            viewModel = hiltViewModel()
+            onNavigate = { },
+            viewModel = LoginViewModel(apiService = MockApiService())
         )
     }
 }
