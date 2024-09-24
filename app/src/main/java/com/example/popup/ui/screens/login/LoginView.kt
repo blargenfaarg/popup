@@ -1,12 +1,11 @@
 package com.example.popup.ui.screens.login
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.popup.mock.MockApiService
 import com.example.popup.ui.theme.PopupTheme
+import com.example.popup.ui.util.UiConstants
 import com.example.popup.ui.util.UiEvent
 
 /**
@@ -70,9 +70,9 @@ fun LoginView(
             .padding(20.dp)
     ) {
         Text(
-            text = "Pop-Up",
+            text = UiConstants.PROJECT_NAME,
             fontWeight = FontWeight.Bold,
-            fontSize = 24.sp,
+            fontSize = 48.sp,
         )
         Spacer(
             modifier = Modifier
@@ -98,9 +98,9 @@ fun LoginView(
                 viewModel.onEvent(LoginViewEvent.OnLoginClicked)
             },
             modifier = Modifier
-                .background(color = Color.Blue, shape = RoundedCornerShape(15.dp))
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            shape = RoundedCornerShape(20.dp)
+                .fillMaxWidth()
+                .padding(horizontal = UiConstants.BUTTON_HORIZONTAL_PADDING),
+            shape = RoundedCornerShape(UiConstants.BUTTON_ROUNDED_CORNER_RADIUS)
         ) {
             Text(text = "Login", color = Color.White)
         }
@@ -132,9 +132,8 @@ fun LoginTextField(
             VisualTransformation.None
         },
         modifier = modifier
-            .padding(horizontal = 25.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
-            .padding(16.dp),
+            .padding(horizontal = UiConstants.TEXT_FIELD_HORIZONTAL_PADDING)
+            .padding(UiConstants.TEXT_FIELD_INTERIOR_PADDING),
         trailingIcon = {
             if (passwordField) {
                 Icon(
