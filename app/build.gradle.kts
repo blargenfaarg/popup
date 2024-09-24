@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -50,13 +52,13 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
@@ -66,4 +68,25 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-kotlin
+    implementation(libs.jackson.module.kotlin)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlin.logging.jvm)
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation(libs.slf4j.api)
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation(libs.okhttp)
+
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
+
+    // Dagger-Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+}
+
+kapt {
+    correctErrorTypes = true
 }

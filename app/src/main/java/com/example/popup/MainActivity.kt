@@ -10,8 +10,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.popup.ui.screens.login.LoginView
+import com.example.popup.ui.screens.main.MainView
 import com.example.popup.ui.theme.PopupTheme
+import com.example.popup.ui.util.UiRoutes
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +30,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = UiRoutes.LOGIN_SCREEN
+                    ) {
+                        composable(UiRoutes.LOGIN_SCREEN) {
+                            LoginView(
+                                onNavigate = {
+                                    navController.navigate(it.route)
+                                }
+                            )
+                        }
+                        composable(UiRoutes.MAIN_SCREEN) {
+                            MainView()
+                        }
+                    }
                 }
             }
         }
