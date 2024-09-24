@@ -1,39 +1,34 @@
 package com.example.popup.ui.screens.login
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.popup.mock.MockApiService
+import com.example.popup.ui.reusable.PopUpErrorDialog
+import com.example.popup.ui.reusable.PopUpPrimaryButton
+import com.example.popup.ui.reusable.PopUpProtectedTextField
+import com.example.popup.ui.reusable.PopUpSecondaryButton
+import com.example.popup.ui.reusable.PopUpTextField
+import com.example.popup.ui.theme.BluePrimary
+import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.PopupTheme
 import com.example.popup.ui.util.UiConstants
 import com.example.popup.ui.util.UiEvent
@@ -50,16 +45,33 @@ fun LoginView(
     onNavigate: (UiEvent.Navigate) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
+    val showErrorDialog = remember { mutableStateOf(false) }
+    val errorDialogTitle = remember { mutableStateOf("") }
+    val errorDialogBody = remember { mutableStateOf("") }
+
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.Navigate -> onNavigate(event)
                 is UiEvent.ShowError -> {
-
+                    errorDialogTitle.value = event.title
+                    errorDialogBody.value = event.message
+                    showErrorDialog.value = true
                 }
                 else -> Unit
             }
         }
+    }
+
+    if (showErrorDialog.value) {
+        PopUpErrorDialog(
+            title = errorDialogTitle.value,
+            body = errorDialogBody.value,
+            negativeText = "Okay",
+            onDismiss = {
+                showErrorDialog.value = false
+            }
+        )
     }
 
     Column(
@@ -67,95 +79,90 @@ fun LoginView(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp)
     ) {
         Text(
             text = UiConstants.PROJECT_NAME,
             fontWeight = FontWeight.Bold,
-            fontSize = 48.sp,
+            fontSize = 64.sp
         )
         Spacer(
             modifier = Modifier
                 .height(10.dp)
         )
-        LoginTextField(
+        PopUpTextField(
             text = viewModel.username,
             labelText = "Username",
             onValueChange = {
                 viewModel.onEvent(LoginViewEvent.OnUsernameChange(it))
             }
         )
-        Spacer(modifier = Modifier.height(4.dp))
-        LoginTextField(
+        PopUpProtectedTextField(
             text = viewModel.password,
             labelText = "Password",
             onValueChange = {
                 viewModel.onEvent(LoginViewEvent.OnPasswordChange(it))
-            },
-            passwordField = true
+            }
         )
-        OutlinedButton(
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        Text(
+            text = "Forgot password?",
+            fontSize = 14.sp,
+            color = BluePrimary,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .align(alignment = Alignment.End)
+        )
+        Spacer(
+            modifier = Modifier
+                .height(35.dp)
+        )
+        PopUpPrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
             onClick = {
                 viewModel.onEvent(LoginViewEvent.OnLoginClicked)
             },
+            text = "Login",
+            loading = viewModel.loading
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = UiConstants.BUTTON_HORIZONTAL_PADDING),
-            shape = RoundedCornerShape(UiConstants.BUTTON_ROUNDED_CORNER_RADIUS)
+                .padding(vertical = 15.dp)
         ) {
-            Text(text = "Login")
+            Divider(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(1.dp)
+                    .padding(start = 20.dp),
+                color = GrayOutlinePrimary
+            )
+            Text(
+                text = "or",
+                color = GrayOutlinePrimary,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+            )
+            Divider(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(1.dp)
+                    .padding(end = 20.dp),
+                color = GrayOutlinePrimary
+            )
         }
+        PopUpSecondaryButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                viewModel.onEvent(event = LoginViewEvent.OnCreateAccountClicked)
+            },
+            text = "Sign up"
+        )
     }
-}
-
-@Composable
-fun LoginTextField(
-    modifier: Modifier = Modifier,
-    text: String,
-    labelText: String,
-    onValueChange: (String) -> Unit,
-    passwordField: Boolean = false,
-) {
-    var showPassword by remember { mutableStateOf(false) }
-
-    TextField(
-        value = text,
-        onValueChange = onValueChange,
-        label = {
-            Text(text = labelText)
-        },
-        visualTransformation = if (passwordField) {
-            when (showPassword) {
-                true -> VisualTransformation.None
-                false -> PasswordVisualTransformation()
-            }
-        } else {
-            VisualTransformation.None
-        },
-        modifier = modifier
-            .padding(horizontal = UiConstants.TEXT_FIELD_HORIZONTAL_PADDING)
-            .padding(UiConstants.TEXT_FIELD_INTERIOR_PADDING),
-        trailingIcon = {
-            if (passwordField) {
-                Icon(
-                    imageVector = when (showPassword) {
-                        true -> Icons.Filled.Visibility
-                        false -> Icons.Filled.VisibilityOff
-                    },
-                    contentDescription = "Toggle password visibility",
-                    modifier = Modifier
-                        .clickable {
-                            showPassword = !showPassword
-                        }
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Filled.Person,
-                    contentDescription = null
-                )
-            }
-        }
-    )
 }
 
 @Preview(showBackground = true)

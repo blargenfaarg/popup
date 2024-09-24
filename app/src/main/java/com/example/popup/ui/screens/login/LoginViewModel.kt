@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.popup.model.request.user.LoginUserRequest
-import com.example.popup.networking.api.ApiService
 import com.example.popup.networking.api.IApiService
 import com.example.popup.ui.util.APopUpViewModel
 import com.example.popup.ui.util.UiEvent
@@ -36,6 +35,8 @@ class LoginViewModel @Inject constructor(
     var username by mutableStateOf("")
     var password by mutableStateOf("")
 
+    var loading by mutableStateOf(false)
+
     /**
      * Receive an event from the UI and decide what to do with it
      */
@@ -43,7 +44,7 @@ class LoginViewModel @Inject constructor(
         when (event) {
             is LoginViewEvent.OnLoginClicked -> attemptLoginUser()
             is LoginViewEvent.OnCreateAccountClicked -> {
-                sendUiEventToChannel(UiEvent.Navigate(UiRoutes.CREATE_SCREEN))
+                sendUiEventToChannel(UiEvent.Navigate(UiRoutes.SIGN_UP_SCREEN))
             }
             is LoginViewEvent.OnPasswordChange -> password = event.password
             is LoginViewEvent.OnUsernameChange -> username = event.username
@@ -55,12 +56,20 @@ class LoginViewModel @Inject constructor(
      * login was successful, sends event to move to the next screen, otherwise shows an error
      */
     private fun attemptLoginUser() {
+        loading = true
+
         viewModelScope.launch {
-            val response = apiService.loginUser(request = LoginUserRequest(username, password))
-            sendUiEventToChannel(event = when (response.wasSuccessful()) {
-                true -> UiEvent.Navigate(route = UiRoutes.MAIN_SCREEN)
-                false -> LOGIN_ERROR_EVENT
-            })
+            try {
+                val response = apiService.loginUser(request = LoginUserRequest(username, password))
+                sendUiEventToChannel(
+                    event = when (response.wasSuccessful()) {
+                        true -> UiEvent.Navigate(route = UiRoutes.MAIN_SCREEN)
+                        false -> LOGIN_ERROR_EVENT
+                    }
+                )
+            } finally {
+                loading = false
+            }
         }
     }
 }
