@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedFilterChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,17 +55,20 @@ fun ListScreen(
             .align(Alignment.TopCenter)
             .padding(15.dp)
         ) {
-            Box (Modifier.offset(x = 210.dp)) {
+            Box (Modifier.offset(x = 180.dp)) {
                 ElevatedFilterChip(
                     selected = false,
                     onClick = { /*TODO*/ },
-                    label = { Text(text = "Filter") })
+                    label = { Text(text = "Filter") },
+                    trailingIcon = {Icon(Icons.Filled.ArrowDropDown, contentDescription = "Icon")}
+                    )
             }
-            Box  (Modifier.offset(x = 220.dp)){
+            Box  (Modifier.offset(x = 185.dp)){
                 ElevatedFilterChip(
                     selected = false,
                     onClick = { /*TODO*/ },
-                    label = { Text(text = "Sort") })
+                    label = { Text(text = "Sort") },
+                    trailingIcon = {Icon(Icons.Filled.ArrowDropDown, contentDescription = "Icon")})
             }
         }
         Row(modifier = Modifier
