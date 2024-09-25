@@ -43,7 +43,7 @@ class LoginViewModel @Inject constructor(
     override fun onEvent(event: LoginViewEvent) {
         when (event) {
             is LoginViewEvent.OnLoginClicked -> attemptLoginUser()
-            is LoginViewEvent.OnCreateAccountClicked -> {
+            is LoginViewEvent.OnSignUpClicked -> {
                 sendUiEventToChannel(UiEvent.Navigate(UiRoutes.SIGN_UP_SCREEN))
             }
             is LoginViewEvent.OnPasswordChange -> password = event.password

@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.popup.ui.theme.GrayOutlinePrimary
+import com.example.popup.ui.util.UiEvent
 
 /**
  * A Pop-Up error dialog
@@ -70,6 +71,26 @@ fun PopUpErrorDialog(
             )
         }
     )
+}
+
+@Composable
+fun PopUpErrorHandler(
+    event: UiEvent.ShowError?,
+    onDismiss: (() -> Unit)? = null,
+    onConfirm: (() -> Unit)? = null,
+    negativeText: String,
+    positiveText: String? = null
+) {
+    if (event != null) {
+        PopUpErrorDialog(
+            title = event.title,
+            body = event.message,
+            negativeText = negativeText,
+            positiveText = positiveText,
+            onDismiss = onDismiss,
+            onConfirm = onConfirm
+        )
+    }
 }
 
 @Preview(showBackground = true)

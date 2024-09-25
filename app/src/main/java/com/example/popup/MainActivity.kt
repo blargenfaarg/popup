@@ -10,11 +10,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.popup.ui.screens.login.LoginView
 import com.example.popup.ui.screens.main.MainView
+import com.example.popup.ui.screens.sign_up.SignUpView
 import com.example.popup.ui.theme.PopupTheme
 import com.example.popup.ui.util.UiRoutes
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +33,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+
                     NavHost(
                         navController = navController,
                         startDestination = UiRoutes.LOGIN_SCREEN
@@ -38,7 +41,19 @@ class MainActivity : ComponentActivity() {
                         composable(UiRoutes.LOGIN_SCREEN) {
                             LoginView(
                                 onNavigate = {
-                                    navController.navigate(it.route)
+                                    navController.navigate(it.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = false
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                        composable(UiRoutes.SIGN_UP_SCREEN) {
+                            SignUpView(
+                                onNavigate = {
+
                                 }
                             )
                         }

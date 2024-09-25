@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import com.example.popup.ui.util.UiConstants
 
 /**
@@ -38,6 +39,7 @@ fun PopUpTextField(
     icon: ImageVector? = null,
     iconAction: (() -> Unit)? = null,
     isError: Boolean = false,
+    horizontalPadding: Dp = UiConstants.TEXT_FIELD_HORIZONTAL_PADDING,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -52,7 +54,7 @@ fun PopUpTextField(
         visualTransformation = visualTransformation,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = UiConstants.TEXT_FIELD_HORIZONTAL_PADDING),
+            .padding(horizontal = horizontalPadding),
         trailingIcon = {
             if (icon != null) {
                 Icon(
@@ -81,6 +83,7 @@ fun PopUpProtectedTextField(
     onValueChange: (String) -> Unit,
     showingIcon: ImageVector = Icons.Filled.Visibility,
     hidingIcon: ImageVector = Icons.Filled.VisibilityOff,
+    horizontalPadding: Dp = UiConstants.TEXT_FIELD_HORIZONTAL_PADDING,
     isError: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -97,7 +100,7 @@ fun PopUpProtectedTextField(
         visualTransformation = if (showText) VisualTransformation.None else PasswordVisualTransformation(),
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = UiConstants.TEXT_FIELD_HORIZONTAL_PADDING),
+            .padding(horizontal = horizontalPadding),
         trailingIcon = {
             Icon(
                 imageVector = when (showText) {
