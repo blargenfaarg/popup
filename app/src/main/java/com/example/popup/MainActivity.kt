@@ -1,5 +1,6 @@
 package com.example.popup
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,12 +34,14 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigationHandler: NavigationHandler
+    lateinit var navController: NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MainActivity.appContext = applicationContext
         setContent {
             PopupTheme {
-                // A surface container using the 'background' color from the theme
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -47,15 +50,15 @@ class MainActivity : ComponentActivity() {
                     navigationHandler.setNavController(navController)
                     SetUpNavHost(navController)
                 }
+                SetupNavGraph(navController = navController)
             }
         }
     }
+    companion object {
+        lateinit var appContext: Context
+    }
 }
 
-/**
- * The sign up view model is passed in here because it needs to be saved between all the sign
- * up screens. Not sure of a better way to do this at the moment
- */
 @Composable
 fun SetUpNavHost(
     navController: NavHostController
@@ -88,21 +91,5 @@ fun SetUpNavHost(
         composable(UiRoutes.MAIN_SCREEN) {
             MainView()
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PopupTheme {
-        Greeting("Android")
     }
 }
