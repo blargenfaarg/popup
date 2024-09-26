@@ -14,5 +14,8 @@ object UiRoutes {
     const val SIGN_UP_SCREEN_PREFERENCES = "sign_up_preferences"
     const val SIGN_UP_SCREEN_LOCATION = "sign_up_location"
     const val SIGN_UP_SCREEN_PERSONAL_INFO = "sign_up_personal_information"
-    const val MAIN_SCREEN = "main"
+    const val MAP_SCREEN = "map_screen"
+    const val LIST_SCREEN = "list_screen"
+    const val CREATE_SCREEN = "create_screen"
+    const val PROFILE_SCREEN = "profile_screen"
 }

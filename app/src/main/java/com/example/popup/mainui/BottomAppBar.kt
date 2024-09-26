@@ -11,7 +11,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import com.example.popup.Screen
+import com.example.popup.ui.util.UiRoutes.CREATE_SCREEN
+import com.example.popup.ui.util.UiRoutes.LIST_SCREEN
+import com.example.popup.ui.util.UiRoutes.MAP_SCREEN
+import com.example.popup.ui.util.UiRoutes.PROFILE_SCREEN
 
 @Composable
 fun LoadNavBar(navController : NavController) {
@@ -20,25 +23,25 @@ fun LoadNavBar(navController : NavController) {
             icon = { Icon(Icons.Filled.Place, contentDescription = "Map") },
             label = { Text("Map") },
             selected = false,
-            onClick = {navController.navigate(route = Screen.MapScreen.route) } //Nav to other screens
+            onClick = {navController.navigate(MAP_SCREEN) } //Nav to other screens
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.List, contentDescription = "List") },
             label = { Text("List") },
             selected = false,
-            onClick = {navController.navigate(route = Screen.ListScreen.route) }
+            onClick = {navController.navigate(LIST_SCREEN) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.AddCircle, contentDescription = "Create") },
             label = { Text("Create") },
             selected = false,
-            onClick = {navController.navigate(route = Screen.CreateScreen.route) }
+            onClick = {navController.navigate(CREATE_SCREEN) }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.Person, contentDescription = "Profile") },
             label = { Text("Profile") },
             selected = false,
-            onClick = {navController.navigate(route = Screen.ProfileScreen.route) }
+            onClick = {navController.navigate(PROFILE_SCREEN) }
         )
 
     }
