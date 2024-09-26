@@ -54,7 +54,7 @@ import com.example.popup.ui.reusable.PopUpErrorHandler
 import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.reusable.PopUpProtectedTextField
 import com.example.popup.ui.reusable.PopUpTextField
-import com.example.popup.ui.screens.login.NavigationHandler
+import com.example.popup.di.NavigationHandler
 import com.example.popup.ui.theme.BluePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
 import com.example.popup.ui.util.UiEvent

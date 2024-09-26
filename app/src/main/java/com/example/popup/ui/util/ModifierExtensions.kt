@@ -8,7 +8,13 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-
+/**
+ * A class that has some extensions to Modifier
+ *
+ * @author Benjamin Michael
+ * Project: Pop-Up
+ * Created on: 9/22/2024
+ */
 fun Modifier.clearFocusOnTap(): Modifier = composed {
     val focusManager = LocalFocusManager.current
     Modifier.pointerInput(Unit) {

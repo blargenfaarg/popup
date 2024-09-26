@@ -1,4 +1,4 @@
-package com.example.popup.ui.screens.login
+package com.example.popup.di
 
 import androidx.navigation.NavController
 import com.example.popup.ui.util.UiRoutes

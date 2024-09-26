@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.popup.di.NavigationHandler
 import com.example.popup.mock.MockApiService
-import com.example.popup.ui.reusable.PopUpErrorDialog
 import com.example.popup.ui.reusable.PopUpErrorHandler
 import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.reusable.PopUpProtectedTextField

@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.example.popup.di.NavigationHandler
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.networking.api.IApiService
 import com.example.popup.ui.util.APopUpViewModel

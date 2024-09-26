@@ -2,7 +2,6 @@ package com.example.popup.di
 
 import com.example.popup.networking.api.ApiService
 import com.example.popup.networking.api.IApiService
-import com.example.popup.ui.screens.login.NavigationHandler
 import com.example.popup.ui.screens.sign_up.SignUpCache
 import dagger.Module
 import dagger.Provides

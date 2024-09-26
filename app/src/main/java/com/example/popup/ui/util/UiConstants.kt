@@ -3,6 +3,13 @@ package com.example.popup.ui.util
 
 import androidx.compose.ui.unit.dp
 
+/**
+ * Constants to be used in the project
+ *
+ * @author Benjamin Michael
+ * Project: Pop-Up
+ * Created on: 9/22/2024
+ */
 object UiConstants {
     const val PROJECT_NAME = "Pop-Up"
 

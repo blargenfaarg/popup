@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.popup.model.domain.common.Location
 import com.example.popup.model.domain.common.PostType
 import com.example.popup.networking.api.IApiService
-import com.example.popup.ui.screens.login.NavigationHandler
+import com.example.popup.di.NavigationHandler
 import com.example.popup.ui.util.APopUpViewModel
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.UiRoutes

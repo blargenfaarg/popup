@@ -2,7 +2,6 @@ package com.example.popup.ui.screens.sign_up
 
 import com.example.popup.model.domain.common.PostType
 import com.example.popup.model.request.user.CreateUserRequest
-import java.io.File
 
 /**
  * This is the most ghetto way to solve the issue where I want to share the sign up view model

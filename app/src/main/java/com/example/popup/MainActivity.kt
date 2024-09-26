@@ -17,7 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.popup.ui.screens.login.LoginView
-import com.example.popup.ui.screens.login.NavigationHandler
+import com.example.popup.di.NavigationHandler
 import com.example.popup.ui.screens.main.MainView
 import com.example.popup.ui.screens.sign_up.GetStartedSignUpView
 import com.example.popup.ui.screens.sign_up.PersonalInformationSignUpView
@@ -68,6 +68,9 @@ fun SetUpNavHost(
             LoginView()
         }
 
+        /**
+         * Nested nav graph so that the sign up view model will not be cleared. Kind of works?
+         */
         navigation(startDestination = UiRoutes.SIGN_UP_SCREEN_GET_STARTED, route = UiRoutes.SIGN_UP) {
             composable(UiRoutes.SIGN_UP_SCREEN_GET_STARTED) {
                 val signUpViewModel: SignUpViewModel = hiltViewModel()
