@@ -8,5 +8,4 @@ package com.example.popup.ui.util
  * Project: Pop-Up
  * Created on: 9/22/2024
  */
-interface ViewModelEvent {
-}
+interface ViewModelEvent

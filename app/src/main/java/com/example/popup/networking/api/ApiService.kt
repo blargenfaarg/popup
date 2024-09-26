@@ -30,8 +30,7 @@ import java.io.File
  * Created on: 9/20/2024
  */
 class ApiService(
-    private val objectMapper: ObjectMapper = jacksonObjectMapper(),
-    private val httpRequestBuilder: IHttpRequestBuilder = OkHttpRequestBuilder()
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
 ): IApiService {
     /**
      * JWT token - automatically cached after login response
@@ -82,7 +81,7 @@ class ApiService(
     // -----------------------------------------------------------------------------------------------------------------
 
     override suspend fun createUser(request: CreateUserRequest, image: File?): ApiResponse<User> {
-        val rb = httpRequestBuilder.post(url = ApiRoutes.USERS_CREATE)
+        val rb = OkHttpRequestBuilder.builder().post(url = ApiRoutes.USERS_CREATE)
             .header("Content-Type", "multipart/form-data")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
@@ -96,7 +95,7 @@ class ApiService(
     }
 
     override suspend fun loginUser(request: LoginUserRequest): ApiResponse<SessionToken> {
-        val httpResponse = httpRequestBuilder.post(url = ApiRoutes.USERS_LOGIN)
+        val httpResponse = OkHttpRequestBuilder.builder().post(url = ApiRoutes.USERS_LOGIN)
             .json(request)
             .send()
 
@@ -112,7 +111,7 @@ class ApiService(
     }
 
     override suspend fun updateUser(request: UpdateUserRequest, image: File?): ApiResponse<User> {
-        val rb = httpRequestBuilder.put(url = ApiRoutes.USERS_UPDATE)
+        val rb = OkHttpRequestBuilder.builder().put(url = ApiRoutes.USERS_UPDATE)
             .header("Authorization", "Bearer $sessionToken")
             .json(request)
 
@@ -125,7 +124,7 @@ class ApiService(
     }
 
     override suspend fun deleteUser(userId: Long): ApiResponse<Void> {
-        val response = httpRequestBuilder.delete(url = ApiRoutes.USERS_DELETE)
+        val response = OkHttpRequestBuilder.builder().delete(url = ApiRoutes.USERS_DELETE)
             .header("Authorization", "Bearer $sessionToken")
             .param("id", userId.toString())
             .send()
@@ -134,7 +133,7 @@ class ApiService(
     }
 
     override suspend fun getUser(userId: Long): ApiResponse<User> {
-        val response = httpRequestBuilder.get(url = ApiRoutes.USERS_GET)
+        val response = OkHttpRequestBuilder.builder().get(url = ApiRoutes.USERS_GET)
             .header("Authorization", "Bearer $sessionToken")
             .param("id", userId.toString())
             .send()
@@ -147,7 +146,7 @@ class ApiService(
     // -----------------------------------------------------------------------------------------------------------------
 
     override suspend fun createPost(request: CreatePostRequest, images: MutableList<File>?): ApiResponse<Post> {
-        val rb = httpRequestBuilder.post(url = ApiRoutes.POSTS_CREATE)
+        val rb = OkHttpRequestBuilder.builder().post(url = ApiRoutes.POSTS_CREATE)
             .header("Authorization", "Bearer $sessionToken")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
@@ -160,7 +159,7 @@ class ApiService(
     }
 
     override suspend fun getPosts(request: GetPostsRequest): ApiResponse<Array<Post>> {
-        val response = httpRequestBuilder.get(url = ApiRoutes.POSTS_GET)
+        val response = OkHttpRequestBuilder.builder().get(url = ApiRoutes.POSTS_GET)
             .header("Authorization", "Bearer $sessionToken")
             .json(request)
             .send()
@@ -169,7 +168,7 @@ class ApiService(
     }
 
     override suspend fun updatePost(request: UpdatePostRequest, images: MutableList<File>?): ApiResponse<Post> {
-        val rb = httpRequestBuilder.put(url = ApiRoutes.POSTS_UPDATE)
+        val rb = OkHttpRequestBuilder.builder().put(url = ApiRoutes.POSTS_UPDATE)
             .header("Authorization", "Bearer $sessionToken")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
@@ -182,7 +181,7 @@ class ApiService(
     }
 
     override suspend fun deletePost(postId: Long, userId: Long): ApiResponse<Void> {
-        val response = httpRequestBuilder.delete(url = ApiRoutes.POSTS_DELETE)
+        val response = OkHttpRequestBuilder.builder().delete(url = ApiRoutes.POSTS_DELETE)
             .header("Authorization", "Bearer $sessionToken")
             .param("postId", postId.toString())
             .param("userId", userId.toString())
@@ -192,7 +191,7 @@ class ApiService(
     }
 
     override suspend fun findPosts(request: FindPostsRequest): ApiResponse<SearchResult> {
-        val response = httpRequestBuilder.get(url = ApiRoutes.POSTS_SEARCH)
+        val response = OkHttpRequestBuilder.builder().get(url = ApiRoutes.POSTS_SEARCH)
             .header("Authorization", "Bearer $sessionToken")
             .json(request)
             .send()
@@ -201,7 +200,7 @@ class ApiService(
     }
 
     override suspend fun nextPagination(paginationId: Long): ApiResponse<SearchResult> {
-        val response = httpRequestBuilder.get(url = "${ApiRoutes.POSTS_SEARCH}/$paginationId")
+        val response = OkHttpRequestBuilder.builder().get(url = "${ApiRoutes.POSTS_SEARCH}/$paginationId")
             .header("Authorization", "Bearer $sessionToken")
             .send()
 

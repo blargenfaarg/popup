@@ -13,5 +13,5 @@ sealed class LoginViewEvent: ViewModelEvent {
     data object OnLoginClicked: LoginViewEvent()
     data class OnUsernameChange(val username: String): LoginViewEvent()
     data class OnPasswordChange(val password: String): LoginViewEvent()
-    data object OnCreateAccountClicked: LoginViewEvent()
+    data object OnSignUpClicked: LoginViewEvent()
 }

@@ -5,11 +5,11 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
  * An HTTP request builder that creates and sends http requests.
@@ -31,6 +31,8 @@ class OkHttpRequestBuilder(
 
     companion object {
         const val MEDIA_TYPE_JSON = "application/json"
+
+        fun builder(): OkHttpRequestBuilder = OkHttpRequestBuilder()
     }
 
     /**
@@ -127,9 +129,9 @@ class OkHttpRequestBuilder(
         return withContext(Dispatchers.IO) {
             val response = client.newCall(request).execute()
             HttpResponse(
-                responseCode = response.code(),
-                contentType = response.body()?.contentType().toString(),
-                responseBody = response.body()?.string() ?: ""
+                responseCode = response.code,
+                contentType = response.body?.contentType().toString(),
+                responseBody = response.body?.string() ?: ""
             )
         }
     }
@@ -168,7 +170,7 @@ class OkHttpRequestBuilder(
         if (json != null) {
             request.method(
                 requestMethod.toString(),
-                RequestBody.create(MediaType.parse(MEDIA_TYPE_JSON), json!!)
+                json!!.toRequestBody(MEDIA_TYPE_JSON.toMediaTypeOrNull())
             )
         } else if (files.isNotEmpty()) {
             val multipartBody = MultipartBody.Builder()
@@ -177,7 +179,11 @@ class OkHttpRequestBuilder(
                     .addFormDataPart(
                         file.fieldName,
                         file.filename,
-                        RequestBody.create(MediaType.parse(file.contentType), file.content)
+                        file.content.toRequestBody(
+                            contentType = file.contentType.toMediaTypeOrNull(),
+                            offset = 0,
+                            byteCount = file.content.size
+                        )
                     )
             }
 

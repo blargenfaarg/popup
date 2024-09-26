@@ -12,8 +12,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -21,8 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.popup.di.NavigationHandler
 import com.example.popup.mock.MockApiService
-import com.example.popup.ui.reusable.PopUpErrorDialog
+import com.example.popup.ui.reusable.PopUpErrorHandler
 import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.reusable.PopUpProtectedTextField
 import com.example.popup.ui.reusable.PopUpSecondaryButton
@@ -42,37 +45,26 @@ import com.example.popup.ui.util.UiEvent
  */
 @Composable
 fun LoginView(
-    onNavigate: (UiEvent.Navigate) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val showErrorDialog = remember { mutableStateOf(false) }
-    val errorDialogTitle = remember { mutableStateOf("") }
-    val errorDialogBody = remember { mutableStateOf("") }
+    var errorEvent: UiEvent.ShowError? by remember { mutableStateOf(null) }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is UiEvent.Navigate -> onNavigate(event)
-                is UiEvent.ShowError -> {
-                    errorDialogTitle.value = event.title
-                    errorDialogBody.value = event.message
-                    showErrorDialog.value = true
-                }
+                is UiEvent.ShowError -> errorEvent = event
                 else -> Unit
             }
         }
     }
 
-    if (showErrorDialog.value) {
-        PopUpErrorDialog(
-            title = errorDialogTitle.value,
-            body = errorDialogBody.value,
-            negativeText = "Okay",
-            onDismiss = {
-                showErrorDialog.value = false
-            }
-        )
-    }
+    PopUpErrorHandler(
+        event = errorEvent,
+        negativeText = "Okay",
+        onDismiss = {
+            errorEvent = null
+        }
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,7 +150,7 @@ fun LoginView(
         PopUpSecondaryButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                viewModel.onEvent(event = LoginViewEvent.OnCreateAccountClicked)
+                viewModel.onEvent(event = LoginViewEvent.OnSignUpClicked)
             },
             text = "Sign up"
         )
@@ -170,8 +162,11 @@ fun LoginView(
 fun LoginViewPreview() {
     PopupTheme {
         LoginView(
-            onNavigate = { },
-            viewModel = LoginViewModel(apiService = MockApiService())
+            //onNavigate = { },
+            viewModel = LoginViewModel(
+                apiService = MockApiService(),
+                navigationHandler = NavigationHandler()
+            )
         )
     }
 }

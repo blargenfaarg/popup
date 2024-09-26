@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.example.popup.di.NavigationHandler
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.networking.api.IApiService
 import com.example.popup.ui.util.APopUpViewModel
@@ -22,7 +23,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val apiService: IApiService
+    private val apiService: IApiService,
+    private val navigationHandler: NavigationHandler
 ): APopUpViewModel<LoginViewEvent>() {
 
     companion object {
@@ -43,8 +45,8 @@ class LoginViewModel @Inject constructor(
     override fun onEvent(event: LoginViewEvent) {
         when (event) {
             is LoginViewEvent.OnLoginClicked -> attemptLoginUser()
-            is LoginViewEvent.OnCreateAccountClicked -> {
-                sendUiEventToChannel(UiEvent.Navigate(UiRoutes.SIGN_UP_SCREEN))
+            is LoginViewEvent.OnSignUpClicked -> {
+                navigationHandler.navigateToRoute(UiRoutes.SIGN_UP_SCREEN_GET_STARTED)
             }
             is LoginViewEvent.OnPasswordChange -> password = event.password
             is LoginViewEvent.OnUsernameChange -> username = event.username
@@ -61,12 +63,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = apiService.loginUser(request = LoginUserRequest(username, password))
-                sendUiEventToChannel(
-                    event = when (response.wasSuccessful()) {
-                        true -> UiEvent.Navigate(route = UiRoutes.MAIN_SCREEN)
-                        false -> LOGIN_ERROR_EVENT
-                    }
-                )
+                when (response.wasSuccessful()) {
+                    true -> navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, clearStack = true)
+                    false -> sendUiEventToChannel(LOGIN_ERROR_EVENT)
+                }
             } finally {
                 loading = false
             }
