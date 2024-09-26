@@ -7,10 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -19,6 +17,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.popup.ui.screens.login.LoginView
 import com.example.popup.di.NavigationHandler
+import com.example.popup.mainui.CreateScreen
+import com.example.popup.mainui.ListScreen
+import com.example.popup.mainui.MapScreen
+import com.example.popup.mainui.ProfileScreen
 import com.example.popup.ui.screens.main.MainView
 import com.example.popup.ui.screens.sign_up.GetStartedSignUpView
 import com.example.popup.ui.screens.sign_up.PersonalInformationSignUpView
@@ -34,7 +36,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigationHandler: NavigationHandler
-    lateinit var navController: NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +51,6 @@ class MainActivity : ComponentActivity() {
                     navigationHandler.setNavController(navController)
                     SetUpNavHost(navController)
                 }
-                SetupNavGraph(navController = navController)
             }
         }
     }
@@ -88,8 +88,17 @@ fun SetUpNavHost(
                 PersonalInformationSignUpView(viewModel = signUpViewModel)
             }
         }
-        composable(UiRoutes.MAIN_SCREEN) {
-            MainView()
+        composable(UiRoutes.MAP_SCREEN) {
+            MapScreen(navController)
+        }
+        composable(UiRoutes.LIST_SCREEN) {
+            ListScreen(navController)
+        }
+        composable(UiRoutes.CREATE_SCREEN) {
+            CreateScreen(navController)
+        }
+        composable(UiRoutes.PROFILE_SCREEN) {
+            ProfileScreen(navController)
         }
     }
 }
