@@ -9,6 +9,10 @@ package com.example.popup.ui.util
  */
 object UiRoutes {
     const val LOGIN_SCREEN = "login"
-    const val SIGN_UP_SCREEN = "create_account"
+    const val SIGN_UP = "sign_up"
+    const val SIGN_UP_SCREEN_GET_STARTED = "sign_up_get_started"
+    const val SIGN_UP_SCREEN_PREFERENCES = "sign_up_preferences"
+    const val SIGN_UP_SCREEN_LOCATION = "sign_up_location"
+    const val SIGN_UP_SCREEN_PERSONAL_INFO = "sign_up_personal_information"
     const val MAIN_SCREEN = "main"
 }

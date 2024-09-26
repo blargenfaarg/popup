@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -36,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -45,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toFile
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.popup.mock.MockApiService
 import com.example.popup.model.domain.common.PostType
@@ -53,29 +54,24 @@ import com.example.popup.ui.reusable.PopUpErrorHandler
 import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.reusable.PopUpProtectedTextField
 import com.example.popup.ui.reusable.PopUpTextField
+import com.example.popup.ui.screens.login.NavigationHandler
 import com.example.popup.ui.theme.BluePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.clearFocusOnTap
 
 /**
- * The sign up screen view
- *
- * @author Benjamin Michael
- * Project: Pop-Up
- * Created on: 9/22/2024
+ * Composable to show the getting started screen
  */
 @Composable
-fun SignUpView(
-    onNavigate: (UiEvent.Navigate) -> Unit,
-    viewModel: SignUpViewModel = hiltViewModel()
+fun GetStartedSignUpView(
+    viewModel: SignUpViewModel
 ) {
     var errorEvent: UiEvent.ShowError? by remember { mutableStateOf(null) }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is UiEvent.Navigate -> onNavigate(event)
                 is UiEvent.ShowError -> errorEvent = event
                 else -> Unit
             }
@@ -90,21 +86,6 @@ fun SignUpView(
         }
     )
 
-    when (viewModel.stage) {
-        SignUpStage.GET_STARTED -> GetStartedSignUpView()
-        SignUpStage.PREFERENCES -> PreferencesSelectionSignUpView()
-        SignUpStage.PERSONAL_INFORMATION -> PersonalInformationSignUpView()
-        else -> Unit
-    }
-}
-
-/**
- * Composable to show the getting started screen
- */
-@Composable
-fun GetStartedSignUpView(
-    viewModel: SignUpViewModel = hiltViewModel()
-) {
     var usernameError by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
@@ -220,8 +201,10 @@ fun GetStartedSignUpView(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PreferencesSelectionSignUpView(
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel
 ) {
+    val preferences = viewModel.booleanStateMap
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -241,8 +224,12 @@ fun PreferencesSelectionSignUpView(
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
         ) {
-            for (postType in PostType.entries) {
-                PreferenceSelection(viewModel = viewModel, preference = postType)
+            for (preference in preferences) {
+                PreferenceSelection(
+                    viewModel = viewModel,
+                    preference = preference.key,
+                    selected = preference.value
+                )
             }
         }
     }
@@ -279,17 +266,15 @@ fun PreferencesSelectionSignUpView(
 @Composable
 fun PreferenceSelection(
     viewModel: SignUpViewModel,
-    preference: PostType
+    preference: PostType,
+    selected: Boolean
 ) {
-    var selected by remember { mutableStateOf(false) }
-
     Surface(
         modifier = Modifier
             .clickable {
-                selected = !selected
                 viewModel.onEvent(
                     event = SignUpViewEvent.OnPreferencesChanged(
-                        preference = preference, selected = selected
+                        preference = preference, selected = !selected
                     )
                 )
             }
@@ -313,7 +298,7 @@ fun PreferenceSelection(
 
 @Composable
 fun PersonalInformationSignUpView(
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel
 ) {
     var firstnameError by remember { mutableStateOf(false) }
     var lastnameError by remember { mutableStateOf(false) }
@@ -331,7 +316,8 @@ fun PersonalInformationSignUpView(
         modifier = Modifier
             .fillMaxSize()
             .padding(20.dp)
-            .clearFocusOnTap(),
+            .clearFocusOnTap()
+            .blur(if (viewModel.loading) 3.dp else 0.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -407,10 +393,26 @@ fun PersonalInformationSignUpView(
                 .fillMaxWidth(),
             buttonHorizontalPadding = 0.dp,
             onClick = {
-                viewModel.onEvent(event = SignUpViewEvent.OnCreateAccountClicked)
+                firstnameError = viewModel.firstname.isBlank()
+                lastnameError = viewModel.lastname.isBlank()
+
+                if (!firstnameError && !lastnameError) {
+                    viewModel.onEvent(event = SignUpViewEvent.OnCreateAccountClicked)
+                }
             },
             text = "Create Account"
         )
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (viewModel.loading) {
+            CircularProgressIndicator(
+                color = BluePrimary
+            )
+        }
     }
 }
 
@@ -452,7 +454,11 @@ fun SignUpViewPageHeading(
 @Composable
 fun PersonalInformationSignUpViewPreview() {
     PersonalInformationSignUpView(
-        viewModel = SignUpViewModel(apiService = MockApiService())
+        viewModel = SignUpViewModel(
+            apiService = MockApiService(),
+            navigationHandler = NavigationHandler(),
+            signUpCache = SignUpCache()
+        )
     )
 }
 
@@ -460,8 +466,13 @@ fun PersonalInformationSignUpViewPreview() {
 @Composable
 fun PreferenceSelectionPreview() {
     PreferenceSelection(
-        viewModel = SignUpViewModel(apiService = MockApiService()),
-        preference = PostType.YARD_SALE
+        viewModel = SignUpViewModel(
+            apiService = MockApiService(),
+            navigationHandler = NavigationHandler(),
+            signUpCache = SignUpCache()
+        ),
+        preference = PostType.YARD_SALE,
+        selected = false
     )
 }
 
@@ -469,7 +480,11 @@ fun PreferenceSelectionPreview() {
 @Composable
 fun PreferencesSelectionSignUpViewPreview() {
     PreferencesSelectionSignUpView(
-        viewModel = SignUpViewModel(apiService = MockApiService())
+        viewModel = SignUpViewModel(
+            apiService = MockApiService(),
+            navigationHandler = NavigationHandler(),
+            signUpCache = SignUpCache()
+        )
     )
 }
 
@@ -477,6 +492,10 @@ fun PreferencesSelectionSignUpViewPreview() {
 @Composable
 fun GetStartedSignUpViewPreview() {
     GetStartedSignUpView(
-        viewModel = SignUpViewModel(apiService = MockApiService())
+        viewModel = SignUpViewModel(
+            apiService = MockApiService(),
+            navigationHandler = NavigationHandler(),
+            signUpCache = SignUpCache()
+        )
     )
 }

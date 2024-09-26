@@ -31,6 +31,8 @@ class OkHttpRequestBuilder(
 
     companion object {
         const val MEDIA_TYPE_JSON = "application/json"
+
+        fun builder(): OkHttpRequestBuilder = OkHttpRequestBuilder()
     }
 
     /**

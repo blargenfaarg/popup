@@ -22,7 +22,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val apiService: IApiService
+    private val apiService: IApiService,
+    private val navigationHandler: NavigationHandler
 ): APopUpViewModel<LoginViewEvent>() {
 
     companion object {
@@ -44,7 +45,7 @@ class LoginViewModel @Inject constructor(
         when (event) {
             is LoginViewEvent.OnLoginClicked -> attemptLoginUser()
             is LoginViewEvent.OnSignUpClicked -> {
-                sendUiEventToChannel(UiEvent.Navigate(UiRoutes.SIGN_UP_SCREEN))
+                navigationHandler.navigateToRoute(UiRoutes.SIGN_UP_SCREEN_GET_STARTED)
             }
             is LoginViewEvent.OnPasswordChange -> password = event.password
             is LoginViewEvent.OnUsernameChange -> username = event.username
@@ -61,12 +62,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = apiService.loginUser(request = LoginUserRequest(username, password))
-                sendUiEventToChannel(
-                    event = when (response.wasSuccessful()) {
-                        true -> UiEvent.Navigate(route = UiRoutes.MAIN_SCREEN)
-                        false -> LOGIN_ERROR_EVENT
-                    }
-                )
+                when (response.wasSuccessful()) {
+                    true -> navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, clearStack = true)
+                    false -> sendUiEventToChannel(LOGIN_ERROR_EVENT)
+                }
             } finally {
                 loading = false
             }

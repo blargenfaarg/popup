@@ -45,7 +45,6 @@ import com.example.popup.ui.util.UiEvent
  */
 @Composable
 fun LoginView(
-    onNavigate: (UiEvent.Navigate) -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     var errorEvent: UiEvent.ShowError? by remember { mutableStateOf(null) }
@@ -53,7 +52,6 @@ fun LoginView(
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is UiEvent.Navigate -> onNavigate(event)
                 is UiEvent.ShowError -> errorEvent = event
                 else -> Unit
             }
@@ -164,8 +162,11 @@ fun LoginView(
 fun LoginViewPreview() {
     PopupTheme {
         LoginView(
-            onNavigate = { },
-            viewModel = LoginViewModel(apiService = MockApiService())
+            //onNavigate = { },
+            viewModel = LoginViewModel(
+                apiService = MockApiService(),
+                navigationHandler = NavigationHandler()
+            )
         )
     }
 }
