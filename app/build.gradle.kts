@@ -3,6 +3,12 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+}
+
+secrets {
+    propertiesFileName = "secrets.properties"
+    defaultPropertiesFileName = "local.defaults.properties"
 }
 
 android {
@@ -89,6 +95,28 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.coil.compose)
+
+    // Google Maps SDK -- these are here for the data model.  Remove these dependencies and replace
+    // with the compose versions.
+    implementation(libs.play.services.maps)
+    // KTX for the Maps SDK for Android library
+    implementation(libs.maps.ktx)
+    // KTX for the Maps SDK for Android Utility Library
+    implementation(libs.maps.utils.ktx)
+    // Google Maps SDK -- these are here for the data model.  Remove these dependencies and replace
+    // with the compose versions.
+    implementation(libs.play.services.maps.v1820)
+    // KTX for the Maps SDK for Android library
+    implementation(libs.maps.ktx)
+    // KTX for the Maps SDK for Android Utility Library
+    implementation(libs.maps.utils.ktx)
+
+    // Google Maps Compose library
+    implementation(libs.maps.compose)
+    // Google Maps Compose utility library
+    implementation(libs.maps.compose.utils)
+    // Google Maps Compose widgets library
+    implementation(libs.maps.compose.widgets)
 }
 
 kapt {

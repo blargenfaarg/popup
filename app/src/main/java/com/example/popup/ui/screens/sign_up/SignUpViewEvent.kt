@@ -13,6 +13,7 @@ import java.io.File
  * Created on: 9/24/2024
  */
 sealed class SignUpViewEvent: ViewModelEvent {
+    data object OnGoBackAttempted: SignUpViewEvent()
     data object OnGetStartedClicked: SignUpViewEvent()
     data object OnPreferenceNextClicked: SignUpViewEvent()
     data object OnCreateAccountClicked: SignUpViewEvent()

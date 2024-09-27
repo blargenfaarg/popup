@@ -16,4 +16,5 @@ sealed class UiEvent {
     data object PopBackStack: UiEvent()
     data class Navigate(val route: String) : UiEvent()
     data class ShowError(val title: String, val message: String): UiEvent()
+    data class ShowBackWarning(val title: String, val message:String): UiEvent()
 }

@@ -1,6 +1,7 @@
 package com.example.popup.ui.screens.sign_up
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,10 +56,12 @@ import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.reusable.PopUpProtectedTextField
 import com.example.popup.ui.reusable.PopUpTextField
 import com.example.popup.di.NavigationHandler
+import com.example.popup.ui.reusable.PopUpErrorDialog
 import com.example.popup.ui.theme.BluePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.clearFocusOnTap
+import com.google.maps.android.compose.GoogleMap
 
 /**
  * Composable to show the getting started screen
@@ -68,6 +71,7 @@ fun GetStartedSignUpView(
     viewModel: SignUpViewModel
 ) {
     var errorEvent: UiEvent.ShowError? by remember { mutableStateOf(null) }
+    var showGoBackWarning by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -78,6 +82,11 @@ fun GetStartedSignUpView(
         }
     }
 
+    BackHandler {
+        showGoBackWarning = true
+    }
+
+    // Shows an errors that happened
     PopUpErrorHandler(
         event = errorEvent,
         negativeText = "Okay",
@@ -85,6 +94,20 @@ fun GetStartedSignUpView(
             errorEvent = null
         }
     )
+
+    // Show the back button warning - let the user know they will lose their data if they leave
+    if (showGoBackWarning) {
+        PopUpErrorDialog(
+            title = "Data Loss Warning",
+            body = "If you leave, you will lose any entered data. To navigate during account creation, use the buttons on the bottom half of the screen.",
+            negativeText = "Leave",
+            positiveText = "Stay",
+            onDismiss = {},
+            onConfirm = {
+                viewModel.onEvent(event = SignUpViewEvent.OnReturnToLoginClicked)
+            }
+        )
+    }
 
     var usernameError by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
@@ -449,8 +472,43 @@ fun SignUpViewPageHeading(
     }
 }
 
+/**
+ * Composable for the location selection
+ */
+@Composable
+fun LocationSelectionSignUpView(
+    viewModel: SignUpViewModel
+) {
+    var isMapLoaded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            onMapLoaded = {
+                isMapLoaded = true
+            }
+        )
+    }
+}
 
 @Preview(showBackground = true)
+@Composable
+fun LocationSelectionSignUpViewPreview() {
+    LocationSelectionSignUpView(
+        viewModel = SignUpViewModel(
+            apiService = MockApiService(),
+            navigationHandler = NavigationHandler(),
+            signUpCache = SignUpCache()
+        )
+    )
+}
+
+
+//@Preview(showBackground = true)
 @Composable
 fun PersonalInformationSignUpViewPreview() {
     PersonalInformationSignUpView(
@@ -462,7 +520,7 @@ fun PersonalInformationSignUpViewPreview() {
     )
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun PreferenceSelectionPreview() {
     PreferenceSelection(
@@ -476,7 +534,7 @@ fun PreferenceSelectionPreview() {
     )
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun PreferencesSelectionSignUpViewPreview() {
     PreferencesSelectionSignUpView(
@@ -488,7 +546,7 @@ fun PreferencesSelectionSignUpViewPreview() {
     )
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun GetStartedSignUpViewPreview() {
     GetStartedSignUpView(

@@ -64,6 +64,9 @@ class SignUpViewModel @Inject constructor(
 
     override fun onEvent(event: SignUpViewEvent) {
         when (event) {
+            is SignUpViewEvent.OnGoBackAttempted -> {
+
+            }
             is SignUpViewEvent.OnReturnToLoginClicked -> {
                 // We actually do not want the information to be saved here
                 signUpCache.clearCache()
