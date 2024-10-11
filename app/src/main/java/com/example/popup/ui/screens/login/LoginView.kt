@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +36,7 @@ import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.PopupTheme
 import com.example.popup.ui.util.UiConstants
 import com.example.popup.ui.util.UiEvent
+import com.example.popup.ui.util.clearFocusOnTap
 
 /**
  * The login screen view
@@ -71,6 +73,7 @@ fun LoginView(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
+            .clearFocusOnTap()
     ) {
         Text(
             text = UiConstants.PROJECT_NAME,
@@ -126,7 +129,7 @@ fun LoginView(
                 .fillMaxWidth()
                 .padding(vertical = 15.dp)
         ) {
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .weight(1f)
                     .height(1.dp)
@@ -139,7 +142,7 @@ fun LoginView(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
             )
-            Divider(
+            HorizontalDivider(
                 modifier = Modifier
                     .weight(1f)
                     .height(1.dp)

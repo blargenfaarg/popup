@@ -10,5 +10,5 @@ package com.example.popup.model.response
 data class Error(
     val title: String,
     val message: String,
-    val errorDetails: String
+    val errorDetails: String? = null
 )

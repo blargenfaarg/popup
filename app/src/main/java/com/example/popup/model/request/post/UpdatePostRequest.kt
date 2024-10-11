@@ -19,6 +19,6 @@ data class UpdatePostRequest(
     val location: Location? = null,
     val type: PostType? = null,
     val deletedImages: MutableList<Long>? = null,
-    val endTime: UTCTime?,
-    val startTime: UTCTime?
+    val endTime: UTCTime? = null,
+    val startTime: UTCTime? = null
 )

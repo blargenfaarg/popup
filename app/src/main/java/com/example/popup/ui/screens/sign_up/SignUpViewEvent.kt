@@ -13,10 +13,16 @@ import java.io.File
  * Created on: 9/24/2024
  */
 sealed class SignUpViewEvent: ViewModelEvent {
+    data object OnGoBackAttempted: SignUpViewEvent()
     data object OnGetStartedClicked: SignUpViewEvent()
-    data object OnPreferenceNextClicked: SignUpViewEvent()
     data object OnCreateAccountClicked: SignUpViewEvent()
     data object OnReturnToLoginClicked: SignUpViewEvent()
+    data object OnPreviousArrowClicked: SignUpViewEvent()
+    data object OnNextArrowClicked: SignUpViewEvent()
+
+    /**
+     * Handle the events for the variables we are keeping track of
+     */
     data class OnFirstnameChanged(val firstname: String): SignUpViewEvent()
     data class OnLastnameChanged(val lastname: String): SignUpViewEvent()
     data class OnEmailChanged(val email: String): SignUpViewEvent()
@@ -25,8 +31,6 @@ sealed class SignUpViewEvent: ViewModelEvent {
     data class OnConfirmPasswordChanged(val password: String): SignUpViewEvent()
     data class OnProfilePictureChanged(val picture: File): SignUpViewEvent()
     data class OnDefaultLocationChanged(val location: Location): SignUpViewEvent()
-    data class OnPreferencesChanged(
-        val preference: PostType,
-        val selected: Boolean
-    ): SignUpViewEvent()
+    data class OnPreferencesChanged(val preference: PostType, val selected: Boolean): SignUpViewEvent()
+    data class OnOtpVerify(val code: String): SignUpViewEvent()
 }

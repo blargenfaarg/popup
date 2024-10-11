@@ -4,14 +4,16 @@ import com.example.popup.model.domain.Post
 import com.example.popup.model.domain.SessionToken
 import com.example.popup.model.domain.User
 import com.example.popup.model.domain.common.UTCTime
+import com.example.popup.model.request.OtpVerifyRequest
 import com.example.popup.model.request.post.CreatePostRequest
 import com.example.popup.model.request.post.FindPostsRequest
-import com.example.popup.model.request.post.GetPostsRequest
+import com.example.popup.model.request.post.GetMapDataRequest
 import com.example.popup.model.request.post.UpdatePostRequest
 import com.example.popup.model.request.user.CreateUserRequest
+import com.example.popup.model.request.user.CreateUserValidateRequest
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.model.request.user.UpdateUserRequest
-import com.example.popup.model.response.SearchResult
+import com.example.popup.model.response.PostMapData
 import com.example.popup.networking.api.ApiResponse
 import com.example.popup.networking.api.IApiService
 import java.io.File
@@ -39,12 +41,15 @@ class MockApiService: IApiService {
             lastname = request.lastname,
             username = request.username,
             email = request.email,
-            profilePicture = null,
             preferences = request.preferences
         )
         cachedUser = user
 
         return ApiResponse.success(data = user)
+    }
+
+    override suspend fun validateUserCreationParams(request: CreateUserValidateRequest): ApiResponse<Void> {
+        return ApiResponse.success()
     }
 
     override suspend fun loginUser(request: LoginUserRequest): ApiResponse<SessionToken> {
@@ -64,7 +69,6 @@ class MockApiService: IApiService {
                 lastname = request.lastname ?: cachedUser.firstname,
                 username = request.username ?: cachedUser.firstname,
                 email = request.email ?: cachedUser.firstname,
-                profilePicture = null,
                 preferences = when (request.preferences) {
                     null -> cachedUser.preferences
                     else -> request.preferences
@@ -106,7 +110,7 @@ class MockApiService: IApiService {
         )
     }
 
-    override suspend fun getPosts(request: GetPostsRequest): ApiResponse<Array<Post>> {
+    override suspend fun getPosts(id: Long): ApiResponse<Array<Post>> {
         return ApiResponse.success(data = cachedPosts.toTypedArray())
     }
 
@@ -145,17 +149,19 @@ class MockApiService: IApiService {
         return if (removed) ApiResponse.success() else ApiResponse.failure()
     }
 
-    override suspend fun findPosts(request: FindPostsRequest): ApiResponse<SearchResult> {
-        // TODO("Create some mock data to return here")
-        return ApiResponse.success(
-            data = SearchResult(
-                paginationId = null,
-                results = mutableListOf()
-            )
-        )
+    override suspend fun findPostListings(request: FindPostsRequest): ApiResponse<Array<Post>> {
+        return ApiResponse.success(data = cachedPosts.toTypedArray())
     }
 
-    override suspend fun nextPagination(paginationId: Long): ApiResponse<SearchResult> {
-        TODO("Not yet implemented")
+    override suspend fun getPostMapData(request: GetMapDataRequest): ApiResponse<Array<PostMapData>> {
+        return ApiResponse.failure()
+    }
+
+    override suspend fun generateOtpCode(email: String): ApiResponse<Void> {
+        return ApiResponse.success()
+    }
+
+    override suspend fun verifyOtpCode(request: OtpVerifyRequest): ApiResponse<Void> {
+        return ApiResponse.success()
     }
 }

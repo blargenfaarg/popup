@@ -1,6 +1,6 @@
 package com.example.popup.model.domain
 
-import com.example.popup.model.domain.Image
+import com.example.popup.model.domain.common.Location
 import com.example.popup.model.domain.common.PostType
 
 /**
@@ -16,6 +16,6 @@ data class User(
     val lastname: String,
     val username: String,
     val email: String,
-    val profilePicture: Image?,
-    val preferences: MutableList<PostType>?
+    val imageUrl: String? = null,
+    val preferences: MutableList<PostType>? = mutableListOf()
 )
