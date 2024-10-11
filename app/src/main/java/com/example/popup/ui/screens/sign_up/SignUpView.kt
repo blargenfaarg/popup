@@ -1,18 +1,16 @@
 package com.example.popup.ui.screens.sign_up
 
-import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +18,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,16 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toFile
-import coil.compose.AsyncImage
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.popup.mock.MockApiService
 import com.example.popup.model.domain.common.PostType
 import com.example.popup.ui.reusable.PopUpErrorHandler
@@ -57,21 +51,23 @@ import com.example.popup.ui.reusable.PopUpProtectedTextField
 import com.example.popup.ui.reusable.PopUpTextField
 import com.example.popup.di.NavigationHandler
 import com.example.popup.ui.reusable.PopUpErrorDialog
+import com.example.popup.ui.reusable.ProfileImage
+import com.example.popup.ui.screens.otp.OtpView
 import com.example.popup.ui.theme.BluePrimary
+import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.clearFocusOnTap
 import com.google.maps.android.compose.GoogleMap
 
 /**
- * Composable to show the getting started screen
+ * The main view for the sign up screen
  */
 @Composable
-fun GetStartedSignUpView(
-    viewModel: SignUpViewModel
+fun SignUpView(
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
     var errorEvent: UiEvent.ShowError? by remember { mutableStateOf(null) }
-    var showGoBackWarning by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = true) {
         viewModel.uiEvent.collect { event ->
@@ -83,7 +79,7 @@ fun GetStartedSignUpView(
     }
 
     BackHandler {
-        showGoBackWarning = true
+        viewModel.onEvent(SignUpViewEvent.OnGoBackAttempted)
     }
 
     // Shows an errors that happened
@@ -96,19 +92,102 @@ fun GetStartedSignUpView(
     )
 
     // Show the back button warning - let the user know they will lose their data if they leave
-    if (showGoBackWarning) {
+    if (viewModel.showBackWarning) {
         PopUpErrorDialog(
             title = "Data Loss Warning",
             body = "If you leave, you will lose any entered data. To navigate during account creation, use the buttons on the bottom half of the screen.",
             negativeText = "Leave",
             positiveText = "Stay",
-            onDismiss = {},
-            onConfirm = {
+            onDismiss = {
+                viewModel.showBackWarning = false
                 viewModel.onEvent(event = SignUpViewEvent.OnReturnToLoginClicked)
+            },
+            onConfirm = {
+                viewModel.showBackWarning = false
             }
         )
     }
 
+    Crossfade(
+        targetState = viewModel.stage,
+        animationSpec = tween(durationMillis = 300),
+        label = "Sign Up Stages"
+    ) {
+        when (it) {
+            SignUpStage.GET_STARTED -> GetStartedSignUpView(viewModel = viewModel)
+            SignUpStage.PREFERENCES -> PreferencesSelectionSignUpView(viewModel = viewModel)
+            SignUpStage.PERSONAL_INFORMATION -> PersonalInformationSignUpView(viewModel = viewModel)
+            SignUpStage.VERIFY_EMAIL -> OtpView(
+                email = viewModel.email,
+                onCodeSubmit = { code ->
+                    viewModel.onEvent(SignUpViewEvent.OnOtpVerify(code))
+                }
+            )
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (viewModel.showBackArrow) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.onEvent(event = SignUpViewEvent.OnPreviousArrowClicked)
+                    },
+                    containerColor = GrayOutlinePrimary,
+                    contentColor = GrayOutlineSecondary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .width(85.dp)
+                        .height(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
+                        contentDescription = "Go to previous screen",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .graphicsLayer(rotationZ = 180f)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            if (viewModel.showNextArrow) {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.onEvent(event = SignUpViewEvent.OnNextArrowClicked)
+                    },
+                    containerColor = BluePrimary,
+                    contentColor = GrayOutlineSecondary,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .width(85.dp)
+                        .height(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
+                        contentDescription = "Go to next screen",
+                        modifier = Modifier
+                            .size(40.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Composable to show the getting started screen
+ */
+@Composable
+fun GetStartedSignUpView(
+    viewModel: SignUpViewModel
+) {
     var usernameError by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
@@ -194,6 +273,7 @@ fun GetStartedSignUpView(
             },
             text = "Get Started",
             buttonHorizontalPadding = 0.dp,
+            loading = viewModel.loading,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -256,31 +336,6 @@ fun PreferencesSelectionSignUpView(
             }
         }
     }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        FloatingActionButton(
-            onClick = {
-                viewModel.onEvent(event = SignUpViewEvent.OnPreferenceNextClicked)
-            },
-            containerColor = BluePrimary,
-            contentColor = GrayOutlineSecondary,
-            shape = RoundedCornerShape(10.dp),
-            modifier = Modifier
-                .width(85.dp)
-                .height(40.dp)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowRightAlt,
-                contentDescription = "Go to next screen",
-                modifier = Modifier
-                    .size(40.dp)
-            )
-        }
-    }
 }
 
 /**
@@ -325,15 +380,6 @@ fun PersonalInformationSignUpView(
 ) {
     var firstnameError by remember { mutableStateOf(false) }
     var lastnameError by remember { mutableStateOf(false) }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        if (uri != null) {
-            selectedImageUri = uri
-            viewModel.onEvent(event = SignUpViewEvent.OnProfilePictureChanged(
-                picture = uri.toFile()
-            ))
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -356,33 +402,13 @@ fun PersonalInformationSignUpView(
                 titleModifier = Modifier.align(alignment = Alignment.Start)
             )
         }
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(Color.LightGray)
-                .clickable {
-                    pickMedia.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            if (selectedImageUri != null) {
-                AsyncImage(
-                    model = selectedImageUri,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Filled.CameraAlt,
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(40.dp)
+        ProfileImage(
+            onPick = { file ->
+                viewModel.onEvent(
+                    SignUpViewEvent.OnProfilePictureChanged(picture = file)
                 )
             }
-        }
+        )
         Spacer(
             modifier = Modifier
                 .size(20.dp)
@@ -472,41 +498,16 @@ fun SignUpViewPageHeading(
     }
 }
 
-/**
- * Composable for the location selection
- */
-@Composable
-fun LocationSelectionSignUpView(
-    viewModel: SignUpViewModel
-) {
-    var isMapLoaded by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            onMapLoaded = {
-                isMapLoaded = true
-            }
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun LocationSelectionSignUpViewPreview() {
-    LocationSelectionSignUpView(
+fun SignUpViewPreview() {
+    SignUpView(
         viewModel = SignUpViewModel(
             apiService = MockApiService(),
-            navigationHandler = NavigationHandler(),
-            signUpCache = SignUpCache()
+            navigationHandler = NavigationHandler()
         )
     )
 }
-
 
 //@Preview(showBackground = true)
 @Composable
@@ -514,8 +515,7 @@ fun PersonalInformationSignUpViewPreview() {
     PersonalInformationSignUpView(
         viewModel = SignUpViewModel(
             apiService = MockApiService(),
-            navigationHandler = NavigationHandler(),
-            signUpCache = SignUpCache()
+            navigationHandler = NavigationHandler()
         )
     )
 }
@@ -526,8 +526,7 @@ fun PreferenceSelectionPreview() {
     PreferenceSelection(
         viewModel = SignUpViewModel(
             apiService = MockApiService(),
-            navigationHandler = NavigationHandler(),
-            signUpCache = SignUpCache()
+            navigationHandler = NavigationHandler()
         ),
         preference = PostType.YARD_SALE,
         selected = false
@@ -540,8 +539,7 @@ fun PreferencesSelectionSignUpViewPreview() {
     PreferencesSelectionSignUpView(
         viewModel = SignUpViewModel(
             apiService = MockApiService(),
-            navigationHandler = NavigationHandler(),
-            signUpCache = SignUpCache()
+            navigationHandler = NavigationHandler()
         )
     )
 }
@@ -552,8 +550,7 @@ fun GetStartedSignUpViewPreview() {
     GetStartedSignUpView(
         viewModel = SignUpViewModel(
             apiService = MockApiService(),
-            navigationHandler = NavigationHandler(),
-            signUpCache = SignUpCache()
+            navigationHandler = NavigationHandler()
         )
     )
 }

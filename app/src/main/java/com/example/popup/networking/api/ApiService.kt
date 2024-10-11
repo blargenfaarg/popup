@@ -2,7 +2,6 @@ package com.example.popup.networking.api
 
 import com.example.popup.networking.http.HttpFile
 import com.example.popup.networking.http.HttpResponse
-import com.example.popup.networking.http.IHttpRequestBuilder
 import com.example.popup.networking.http.OkHttpRequestBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -10,15 +9,17 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.example.popup.model.domain.Post
 import com.example.popup.model.domain.SessionToken
 import com.example.popup.model.domain.User
+import com.example.popup.model.request.OtpVerifyRequest
 import com.example.popup.model.request.post.CreatePostRequest
 import com.example.popup.model.request.post.FindPostsRequest
-import com.example.popup.model.request.post.GetPostsRequest
+import com.example.popup.model.request.post.GetMapDataRequest
 import com.example.popup.model.request.post.UpdatePostRequest
 import com.example.popup.model.request.user.CreateUserRequest
+import com.example.popup.model.request.user.CreateUserValidateRequest
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.model.request.user.UpdateUserRequest
 import com.example.popup.model.response.Error
-import com.example.popup.model.response.SearchResult
+import com.example.popup.model.response.PostMapData
 import java.io.File
 
 /**
@@ -81,7 +82,8 @@ class ApiService(
     // -----------------------------------------------------------------------------------------------------------------
 
     override suspend fun createUser(request: CreateUserRequest, image: File?): ApiResponse<User> {
-        val rb = OkHttpRequestBuilder.builder().post(url = ApiRoutes.USERS_CREATE)
+        val rb = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.USERS_CREATE)
             .header("Content-Type", "multipart/form-data")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
@@ -90,8 +92,16 @@ class ApiService(
         }
 
         val response = rb.send()
-        println("Server response from http call -> $response")
         return buildApiResponse<User>(response)
+    }
+
+    override suspend fun validateUserCreationParams(request: CreateUserValidateRequest): ApiResponse<Void> {
+        val httpResponse = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.USERS_CREATE_VALIDATE)
+            .json(request)
+            .send()
+
+        return buildEmptyApiResponse(httpResponse)
     }
 
     override suspend fun loginUser(request: LoginUserRequest): ApiResponse<SessionToken> {
@@ -102,7 +112,6 @@ class ApiService(
         val apiResponse = buildApiResponse<SessionToken>(httpResponse)
 
         if (apiResponse.wasSuccessful()) {
-            println("Response from server = $apiResponse")
             // Eh, should be safe... right?
             this.sessionToken = apiResponse.data!!.token
         }
@@ -111,7 +120,8 @@ class ApiService(
     }
 
     override suspend fun updateUser(request: UpdateUserRequest, image: File?): ApiResponse<User> {
-        val rb = OkHttpRequestBuilder.builder().put(url = ApiRoutes.USERS_UPDATE)
+        val rb = OkHttpRequestBuilder.builder()
+            .put(url = ApiRoutes.USERS_UPDATE)
             .header("Authorization", "Bearer $sessionToken")
             .json(request)
 
@@ -124,7 +134,8 @@ class ApiService(
     }
 
     override suspend fun deleteUser(userId: Long): ApiResponse<Void> {
-        val response = OkHttpRequestBuilder.builder().delete(url = ApiRoutes.USERS_DELETE)
+        val response = OkHttpRequestBuilder.builder()
+            .delete(url = ApiRoutes.USERS_DELETE)
             .header("Authorization", "Bearer $sessionToken")
             .param("id", userId.toString())
             .send()
@@ -133,7 +144,8 @@ class ApiService(
     }
 
     override suspend fun getUser(userId: Long): ApiResponse<User> {
-        val response = OkHttpRequestBuilder.builder().get(url = ApiRoutes.USERS_GET)
+        val response = OkHttpRequestBuilder.builder()
+            .get(url = ApiRoutes.USERS_GET)
             .header("Authorization", "Bearer $sessionToken")
             .param("id", userId.toString())
             .send()
@@ -146,7 +158,8 @@ class ApiService(
     // -----------------------------------------------------------------------------------------------------------------
 
     override suspend fun createPost(request: CreatePostRequest, images: MutableList<File>?): ApiResponse<Post> {
-        val rb = OkHttpRequestBuilder.builder().post(url = ApiRoutes.POSTS_CREATE)
+        val rb = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.POSTS_CREATE)
             .header("Authorization", "Bearer $sessionToken")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
@@ -158,17 +171,19 @@ class ApiService(
         return buildApiResponse<Post>(response)
     }
 
-    override suspend fun getPosts(request: GetPostsRequest): ApiResponse<Array<Post>> {
-        val response = OkHttpRequestBuilder.builder().get(url = ApiRoutes.POSTS_GET)
+    override suspend fun getPosts(id: Long): ApiResponse<Array<Post>> {
+        val response = OkHttpRequestBuilder.builder()
+            .get(url = ApiRoutes.POSTS_GET)
             .header("Authorization", "Bearer $sessionToken")
-            .json(request)
+            .param("id", id.toString())
             .send()
 
         return buildApiResponse<Array<Post>>(response)
     }
 
     override suspend fun updatePost(request: UpdatePostRequest, images: MutableList<File>?): ApiResponse<Post> {
-        val rb = OkHttpRequestBuilder.builder().put(url = ApiRoutes.POSTS_UPDATE)
+        val rb = OkHttpRequestBuilder.builder()
+            .put(url = ApiRoutes.POSTS_UPDATE)
             .header("Authorization", "Bearer $sessionToken")
             .file(file = HttpFile.fromJson(objectMapper.writeValueAsString(request)))
 
@@ -181,7 +196,8 @@ class ApiService(
     }
 
     override suspend fun deletePost(postId: Long, userId: Long): ApiResponse<Void> {
-        val response = OkHttpRequestBuilder.builder().delete(url = ApiRoutes.POSTS_DELETE)
+        val response = OkHttpRequestBuilder.builder()
+            .delete(url = ApiRoutes.POSTS_DELETE)
             .header("Authorization", "Bearer $sessionToken")
             .param("postId", postId.toString())
             .param("userId", userId.toString())
@@ -190,21 +206,47 @@ class ApiService(
         return buildEmptyApiResponse(response)
     }
 
-    override suspend fun findPosts(request: FindPostsRequest): ApiResponse<SearchResult> {
-        val response = OkHttpRequestBuilder.builder().get(url = ApiRoutes.POSTS_SEARCH)
+    override suspend fun findPostListings(request: FindPostsRequest): ApiResponse<Array<Post>> {
+        val response = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.POSTS_SEARCH)
             .header("Authorization", "Bearer $sessionToken")
             .json(request)
             .send()
 
-        return buildApiResponse<SearchResult>(response)
+        return buildApiResponse<Array<Post>>(response)
     }
 
-    override suspend fun nextPagination(paginationId: Long): ApiResponse<SearchResult> {
-        val response = OkHttpRequestBuilder.builder().get(url = "${ApiRoutes.POSTS_SEARCH}/$paginationId")
+    override suspend fun getPostMapData(request: GetMapDataRequest): ApiResponse<Array<PostMapData>> {
+        val httpResponse = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.POSTS_MAP_DATA)
             .header("Authorization", "Bearer $sessionToken")
+            .json(request)
             .send()
 
-        return buildApiResponse<SearchResult>(response)
+        return buildApiResponse<Array<PostMapData>>(httpResponse)
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+    //                                  API calls for otp
+    // -----------------------------------------------------------------------------------------------------------------
+
+
+    override suspend fun generateOtpCode(email: String): ApiResponse<Void> {
+        val httpResponse = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.OTP_GENERATE)
+            .param("email", email)
+            .send()
+
+        return buildEmptyApiResponse(httpResponse)
+    }
+
+    override suspend fun verifyOtpCode(request: OtpVerifyRequest): ApiResponse<Void> {
+        val httpResponse = OkHttpRequestBuilder.builder()
+            .post(url = ApiRoutes.OTP_VERIFY)
+            .json(request)
+            .send()
+
+        return buildEmptyApiResponse(httpResponse)
     }
 
 }

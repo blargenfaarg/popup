@@ -3,14 +3,16 @@ package com.example.popup.networking.api
 import com.example.popup.model.domain.Post
 import com.example.popup.model.domain.SessionToken
 import com.example.popup.model.domain.User
+import com.example.popup.model.request.OtpVerifyRequest
 import com.example.popup.model.request.post.CreatePostRequest
 import com.example.popup.model.request.post.FindPostsRequest
-import com.example.popup.model.request.post.GetPostsRequest
+import com.example.popup.model.request.post.GetMapDataRequest
 import com.example.popup.model.request.post.UpdatePostRequest
 import com.example.popup.model.request.user.CreateUserRequest
+import com.example.popup.model.request.user.CreateUserValidateRequest
 import com.example.popup.model.request.user.LoginUserRequest
 import com.example.popup.model.request.user.UpdateUserRequest
-import com.example.popup.model.response.SearchResult
+import com.example.popup.model.response.PostMapData
 import java.io.File
 
 /**
@@ -32,6 +34,15 @@ interface IApiService {
      * @return the api response containing the created user account, or an error response
      */
     suspend fun createUser(request: CreateUserRequest, image: File? = null): ApiResponse<User>
+
+    /**
+     * Send a post request to the API to validate a username and email, ensuring it is not taken.
+     * A response of 200 means you are good
+     *
+     * @param request the request json
+     * @return api response dictating if the validation was successful
+     */
+    suspend fun validateUserCreationParams(request: CreateUserValidateRequest): ApiResponse<Void>
 
     /**
      * Send a login user request to the api
@@ -78,10 +89,10 @@ interface IApiService {
     /**
      * Send a get posts request to the api
      *
-     * @param request the get posts request to send
+     * @param id the id of the user to get the posts for
      * @return api response containing either the list of posts found, or an error response
      */
-    suspend fun getPosts(request: GetPostsRequest): ApiResponse<Array<Post>>
+    suspend fun getPosts(id: Long): ApiResponse<Array<Post>>
 
     /**
      * Send an update post request to the api
@@ -107,13 +118,30 @@ interface IApiService {
      * @param request the find post request body
      * @return api response containing either the Posts found, or an error response
      */
-    suspend fun findPosts(request: FindPostsRequest): ApiResponse<SearchResult>
+    suspend fun findPostListings(request: FindPostsRequest): ApiResponse<Array<Post>>
 
     /**
-     * Send a request to the api to load the next pagination from a search
+     * Get the post map data for a given viewport
      *
-     * @param paginationId the id of the pagination we want to load
-     * @return api response containing either the nest Posts found, or an error response
+     * @param request the viewport to find data inside
+     * @return api response with the map data condensed version of posts
      */
-    suspend fun nextPagination(paginationId: Long): ApiResponse<SearchResult>
+    suspend fun getPostMapData(request: GetMapDataRequest): ApiResponse<Array<PostMapData>>
+
+    /**
+     * Send a request to generate an opt code that is sent via email.
+     *
+     * @param email the email to send the otp code
+     * @return api response if successful or not
+     */
+    suspend fun generateOtpCode(email: String): ApiResponse<Void>
+
+    /**
+     * Send a request to validate an otp code.
+     * Assume a good response code of 200 means that the validation was successful.
+     *
+     * @param request otp verify request
+     * @return api response dictating the result of the call
+     */
+    suspend fun verifyOtpCode(request: OtpVerifyRequest): ApiResponse<Void>
 }

@@ -9,9 +9,11 @@ import com.example.popup.model.domain.common.Location
 import com.example.popup.model.domain.common.PostType
 import com.example.popup.networking.api.IApiService
 import com.example.popup.di.NavigationHandler
+import com.example.popup.model.request.OtpVerifyRequest
+import com.example.popup.model.request.user.CreateUserRequest
+import com.example.popup.model.request.user.CreateUserValidateRequest
 import com.example.popup.ui.util.APopUpViewModel
 import com.example.popup.ui.util.UiEvent
-import com.example.popup.ui.util.UiRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.File
@@ -27,8 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val apiService: IApiService,
-    private val navigationHandler: NavigationHandler,
-    private val signUpCache: SignUpCache
+    private val navigationHandler: NavigationHandler
 ): APopUpViewModel<SignUpViewEvent>() {
 
     companion object {
@@ -61,15 +62,32 @@ class SignUpViewModel @Inject constructor(
 
     // Loading dialog for create account progress
     var loading by mutableStateOf(false)
+    var showBackWarning by mutableStateOf(false)
 
+    // The stage for the view model
+    var stage by mutableStateOf(SignUpStage.GET_STARTED)
+        private set
+    // To make life easier
+    private var stageIndex: Int = 0
+    private val stages = SignUpStage.entries.toTypedArray()
+
+    // Control the next and previous arrows
+    var showBackArrow by mutableStateOf(false)
+    var showNextArrow by mutableStateOf(false)
+
+    /**
+     * Handle the events from the view
+     */
     override fun onEvent(event: SignUpViewEvent) {
         when (event) {
             is SignUpViewEvent.OnGoBackAttempted -> {
-
+                if (stage == SignUpStage.GET_STARTED) {
+                    navigationHandler.navigateBackToLoginScreen()
+                } else {
+                    showBackWarning = true
+                }
             }
             is SignUpViewEvent.OnReturnToLoginClicked -> {
-                // We actually do not want the information to be saved here
-                signUpCache.clearCache()
                 navigationHandler.navigateBackToLoginScreen()
             }
             is SignUpViewEvent.OnCreateAccountClicked -> createUserAccount()
@@ -83,15 +101,88 @@ class SignUpViewModel @Inject constructor(
                 handlePreferenceChange(event.preference, event.selected)
             }
             is SignUpViewEvent.OnUsernameChanged -> username = event.username
-            is SignUpViewEvent.OnGetStartedClicked -> {
-                signUpCache.cacheGettingStartedInfo(username, password, email)
-                navigationHandler.navigateToRoute(UiRoutes.SIGN_UP_SCREEN_PREFERENCES)
-            }
-            is SignUpViewEvent.OnPreferenceNextClicked -> {
-                signUpCache.cachePreferences(preferences)
-                navigationHandler.navigateToRoute(UiRoutes.SIGN_UP_SCREEN_PERSONAL_INFO)
-            }
+            SignUpViewEvent.OnGetStartedClicked -> handleGetStarted()
             is SignUpViewEvent.OnProfilePictureChanged -> profilePicture = event.picture
+            SignUpViewEvent.OnNextArrowClicked -> handleNextStageChange()
+            SignUpViewEvent.OnPreviousArrowClicked -> handlePreviousStageChange()
+            is SignUpViewEvent.OnOtpVerify -> handleOtpVerify(event.code)
+        }
+    }
+
+    /**
+     * Handle when the user submits the otp code
+     */
+    private fun handleOtpVerify(code: String) {
+        viewModelScope.launch {
+            val request = OtpVerifyRequest(
+                email = email,
+                otpCode = code
+            )
+
+            val response = apiService.verifyOtpCode(request)
+
+            when (response.wasSuccessful()) {
+                true -> handleNextStageChange()
+                false -> {
+                    if (response.error != null) {
+                        sendUiEventToChannel(UiEvent.ShowError(
+                            title = response.error.title,
+                            message = response.error.message
+                        ))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Method called when the user hits the get started button. will validate the creation params
+     * and ensure no duplicate username or email, and then let them move on
+     */
+    private fun handleGetStarted() {
+        loading = true
+
+        viewModelScope.launch {
+            val request = CreateUserValidateRequest(
+                email = email,
+                username = username
+            )
+
+            val response = apiService.validateUserCreationParams(request)
+            loading = false
+
+            when (response.wasSuccessful()) {
+                true -> {
+                    handleNextStageChange()
+                    sendRequestForOtpCode()
+                }
+                false  -> {
+                    if (response.error != null) {
+                        sendUiEventToChannel(
+                            UiEvent.ShowError(
+                                title = response.error.title,
+                                message = response.error.message
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Generate an otp code
+     */
+    private fun sendRequestForOtpCode() {
+        viewModelScope.launch {
+            val response = apiService.generateOtpCode(email = email)
+
+            if (!response.wasSuccessful() && response.error != null) {
+                sendUiEventToChannel(UiEvent.ShowError(
+                    title = response.error.title,
+                    message = response.error.message
+                ))
+            }
         }
     }
 
@@ -103,12 +194,22 @@ class SignUpViewModel @Inject constructor(
         loading = true
 
         viewModelScope.launch {
-            val request = signUpCache.buildCreateUserRequest(firstname, lastname)
+            val request = CreateUserRequest(
+                firstname = firstname,
+                lastname = lastname,
+                username = username,
+                password = password,
+                email = email,
+                preferences = if (preferences.isEmpty()) null else preferences
+            )
+
             val response = apiService.createUser(request, profilePicture)
+
             loading = false
+
             when (response.wasSuccessful()) {
                 true -> navigationHandler.navigateBackToLoginScreen()
-                false -> CREATE_ACCOUNT_ERROR
+                false -> sendUiEventToChannel(CREATE_ACCOUNT_ERROR)
             }
         }
     }
@@ -124,6 +225,28 @@ class SignUpViewModel @Inject constructor(
             preferences.add(preference)
         } else {
             preferences.remove(preference)
+        }
+    }
+
+    /**
+     * Handles changing to the next stage
+     */
+    private fun handleNextStageChange() {
+        if (stageIndex < stages.size - 1) {
+            stage = stages[++stageIndex]
+            showNextArrow = SignUpStage.showNextArrow(stage)
+            showBackArrow = SignUpStage.showBackArrow(stage)
+        }
+    }
+
+    /**
+     * Handles changing to the previous stage
+     */
+    private fun handlePreviousStageChange() {
+        if (stageIndex > 0) {
+            stage = stages[--stageIndex]
+            showNextArrow = SignUpStage.showNextArrow(stage)
+            showBackArrow = SignUpStage.showBackArrow(stage)
         }
     }
 

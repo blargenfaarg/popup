@@ -117,6 +117,7 @@ dependencies {
     implementation(libs.maps.compose.utils)
     // Google Maps Compose widgets library
     implementation(libs.maps.compose.widgets)
+    implementation(libs.places)
 }
 
 kapt {

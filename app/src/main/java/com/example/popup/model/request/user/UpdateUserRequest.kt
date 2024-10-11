@@ -1,5 +1,6 @@
 package com.example.popup.model.request.user
 
+import com.example.popup.model.domain.common.Location
 import com.example.popup.model.domain.common.PostType
 
 /**

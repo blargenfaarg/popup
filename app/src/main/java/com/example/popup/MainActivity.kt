@@ -25,9 +25,11 @@ import com.example.popup.ui.screens.main.MainView
 import com.example.popup.ui.screens.sign_up.GetStartedSignUpView
 import com.example.popup.ui.screens.sign_up.PersonalInformationSignUpView
 import com.example.popup.ui.screens.sign_up.PreferencesSelectionSignUpView
+import com.example.popup.ui.screens.sign_up.SignUpView
 import com.example.popup.ui.screens.sign_up.SignUpViewModel
 import com.example.popup.ui.theme.PopupTheme
 import com.example.popup.ui.util.UiRoutes
+import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -39,7 +41,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MainActivity.appContext = applicationContext
+        appContext = applicationContext
+
         setContent {
             PopupTheme {
 
@@ -54,6 +57,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     companion object {
         lateinit var appContext: Context
     }
@@ -70,23 +74,8 @@ fun SetUpNavHost(
         composable(UiRoutes.LOGIN_SCREEN) {
             LoginView()
         }
-
-        /**
-         * Nested nav graph so that the sign up view model will not be cleared. Kind of works?
-         */
-        navigation(startDestination = UiRoutes.SIGN_UP_SCREEN_GET_STARTED, route = UiRoutes.SIGN_UP) {
-            composable(UiRoutes.SIGN_UP_SCREEN_GET_STARTED) {
-                val signUpViewModel: SignUpViewModel = hiltViewModel()
-                GetStartedSignUpView(viewModel = signUpViewModel)
-            }
-            composable(UiRoutes.SIGN_UP_SCREEN_PREFERENCES) {
-                val signUpViewModel: SignUpViewModel = hiltViewModel()
-                PreferencesSelectionSignUpView(viewModel = signUpViewModel)
-            }
-            composable(UiRoutes.SIGN_UP_SCREEN_PERSONAL_INFO) {
-                val signUpViewModel: SignUpViewModel = hiltViewModel()
-                PersonalInformationSignUpView(viewModel = signUpViewModel)
-            }
+        composable(UiRoutes.SIGN_UP) {
+            SignUpView()
         }
         composable(UiRoutes.MAP_SCREEN) {
             MapScreen(navController)

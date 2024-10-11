@@ -46,7 +46,7 @@ class LoginViewModel @Inject constructor(
         when (event) {
             is LoginViewEvent.OnLoginClicked -> attemptLoginUser()
             is LoginViewEvent.OnSignUpClicked -> {
-                navigationHandler.navigateToRoute(UiRoutes.SIGN_UP_SCREEN_GET_STARTED)
+                navigationHandler.navigateToRoute(UiRoutes.SIGN_UP)
             }
             is LoginViewEvent.OnPasswordChange -> password = event.password
             is LoginViewEvent.OnUsernameChange -> username = event.username

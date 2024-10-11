@@ -11,6 +11,7 @@ import com.example.popup.model.domain.common.Location
  */
 data class FindPostsRequest(
     val userId: Long,
+    val page: Int,
     val location: Location,
-    val searchRange: Double
+    val rangeMiles: Double
 )
