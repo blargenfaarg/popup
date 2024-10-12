@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -20,6 +22,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * The map screen view
@@ -34,6 +38,7 @@ fun MapView(
 ) {
     val userLocation by viewModel.userLocation.collectAsState()
     val markers by viewModel.postMarkers.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(userLocation, 15f)
@@ -44,6 +49,20 @@ fun MapView(
             update = CameraUpdateFactory.newLatLngZoom(userLocation, 15f),
             durationMs = 1000
         )
+    }
+
+    LaunchedEffect(cameraPositionState) {
+        snapshotFlow { cameraPositionState.position }
+            .collect { position ->
+                println("Camera state updated")
+                coroutineScope.launch {
+                    delay(1000)
+                    val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+                    bounds?.let {
+                        viewModel.onEvent(MapViewEvent.MapBoundsChanged(it))
+                    }
+                }
+            }
     }
 
     Box(

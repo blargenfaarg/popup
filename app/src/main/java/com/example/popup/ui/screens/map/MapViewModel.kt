@@ -73,7 +73,9 @@ class MapViewModel @Inject constructor(
     override fun onEvent(event: MapViewEvent) {
         when (event) {
             is MapViewEvent.MapBoundsChanged -> getPostMapDataForBound(event.bounds)
-            is MapViewEvent.PostClicked -> TODO()
+            is MapViewEvent.PostClicked -> {
+                
+            }
         }
     }
 
