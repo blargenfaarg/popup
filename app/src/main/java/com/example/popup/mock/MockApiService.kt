@@ -114,6 +114,10 @@ class MockApiService: IApiService {
         return ApiResponse.success(data = cachedPosts.toTypedArray())
     }
 
+    override suspend fun getPost(id: Long): ApiResponse<Post> {
+        return ApiResponse.failure()
+    }
+
     override suspend fun updatePost(
         request: UpdatePostRequest,
         images: MutableList<File>?
