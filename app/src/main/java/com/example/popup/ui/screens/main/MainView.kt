@@ -117,13 +117,13 @@ fun MainView() {
                 MapView()
             }
             composable(UiRoutes.LIST_SCREEN) {
-                ListScreen(navController)
+                ListScreen()
             }
             composable(UiRoutes.CREATE_SCREEN) {
-                CreateScreen(navController)
+                CreateScreen()
             }
             composable(UiRoutes.PROFILE_SCREEN) {
-                ProfileScreen(navController)
+                ProfileScreen()
             }
         }
     }
