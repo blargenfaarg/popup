@@ -202,7 +202,8 @@ class OkHttpRequestBuilder(
                 multipartBody.build()
             )
         } else {
-            request.method(requestMethod.toString(), EMPTY_REQUEST)
+            val requestBody = if(requestMethod == HttpMethod.GET) null else EMPTY_REQUEST
+            request.method(requestMethod.toString(), requestBody)
         }
     }
 
