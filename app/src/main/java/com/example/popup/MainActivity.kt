@@ -17,7 +17,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.popup.ui.screens.login.LoginView
 import com.example.popup.di.NavigationHandler
+import com.example.popup.mainui.CreateMiscScreen
+import com.example.popup.mainui.CreateNameScreen
+import com.example.popup.mainui.CreatePlaceScreen
+import com.example.popup.mainui.CreateReviewScreen
 import com.example.popup.mainui.CreateScreen
+import com.example.popup.mainui.CreateTimeScreen
+import com.example.popup.mainui.CreateTypeScreen
 import com.example.popup.mainui.ListScreen
 import com.example.popup.mainui.MapScreen
 import com.example.popup.mainui.ProfileScreen
@@ -89,5 +95,26 @@ fun SetUpNavHost(
         composable(UiRoutes.PROFILE_SCREEN) {
             ProfileScreen(navController)
         }
+        composable(UiRoutes.CREATE_NAME_SCREEN) {
+            CreateNameScreen(navController)
+        }
+        composable(UiRoutes.CREATE_TYPE_SCREEN) {
+            CreateTypeScreen(navController)
+        }
+        composable(UiRoutes.CREATE_TIME_SCREEN) {
+            CreateTimeScreen(navController)
+        }
+        composable(UiRoutes.CREATE_PLACE_SCREEN) {
+            CreatePlaceScreen(navController)
+        }
+
+        composable(UiRoutes.CREATE_MISC_SCREEN) {
+            CreateMiscScreen(navController)
+        }
+        composable(UiRoutes.CREATE_REVIEW_SCREEN) {
+            CreateReviewScreen(navController)
+        }
+
+
     }
 }
