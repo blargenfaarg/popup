@@ -28,6 +28,7 @@ class OkHttpRequestBuilder(
      * Logger to warn of any errors
      */
     private val logger = KotlinLogging.logger {}
+    private val EMPTY_REQUEST = ByteArray(0).toRequestBody()
 
     companion object {
         const val MEDIA_TYPE_JSON = "application/json"
@@ -191,6 +192,8 @@ class OkHttpRequestBuilder(
                 requestMethod.toString(),
                 multipartBody.build()
             )
+        } else {
+            request.method(requestMethod.toString(), EMPTY_REQUEST)
         }
     }
 
@@ -199,13 +202,17 @@ class OkHttpRequestBuilder(
      * simply return the url of the class. If there are params, they will be appended to the url
      */
     private fun buildUrl(): String {
-        return if (params.isEmpty()) {
-            this.url
-        } else {
-            params.forEach { (k, v) ->
-                url.plus("&$k=$v")
+        if (params.isNotEmpty()) {
+            var i = 0
+            for (param in params) {
+                url = when(i == 0) {
+                    true -> url.plus("?${param.key}=${param.value}")
+                    false -> url.plus("&${param.key}=${param.value}")
+                }
+                i += 1
             }
-            return url
         }
+
+        return url
     }
 }
