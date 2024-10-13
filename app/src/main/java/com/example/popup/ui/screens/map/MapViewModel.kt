@@ -4,6 +4,7 @@ import android.location.Location as AndroidLocation
 import androidx.lifecycle.viewModelScope
 import com.example.popup.di.location.ILocationUpdatedListener
 import com.example.popup.di.location.LocationHandler
+import com.example.popup.model.domain.Post
 import com.example.popup.model.domain.common.Location
 import com.example.popup.model.request.post.GetMapDataRequest
 import com.example.popup.model.response.PostMapData
@@ -44,6 +45,17 @@ class MapViewModel @Inject constructor(
     val userLocation: StateFlow<LatLng> = _userLocation.asStateFlow()
 
     /**
+     * Track if we should show the bottom sheet pop-up
+     */
+    private val _showPopupDetail = MutableStateFlow(false)
+    val showPopupDetail = _showPopupDetail.asStateFlow()
+
+    /**
+     * The post to show the details for
+     */
+    var postToShow: Post? = null
+
+    /**
      * Default constructor
      */
     init {
@@ -74,7 +86,7 @@ class MapViewModel @Inject constructor(
         when (event) {
             is MapViewEvent.MapBoundsChanged -> getPostMapDataForBound(event.bounds)
             is MapViewEvent.PostClicked -> {
-                
+
             }
         }
     }
