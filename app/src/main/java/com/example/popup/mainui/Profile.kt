@@ -16,16 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.twotone.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedFilterChip
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -45,9 +39,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -115,17 +110,11 @@ fun ProfileScreen(navController: NavController) {
                }
            }
         }
-
-        Row(modifier = Modifier
-            .align(Alignment.BottomCenter)
-        ) {
-            LoadNavBar(navController = navController)
-        }
     }
 }
 
 @Preview
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(navController = rememberNavController())
+    ProfileScreen()
 }
