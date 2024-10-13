@@ -78,6 +78,15 @@ class OkHttpRequestBuilder(
         return this
     }
 
+    override fun pathVariable(variable: String): IHttpRequestBuilder {
+        require(::url.isInitialized) {
+            "The http URL must be initialized before calling #pathVariable!"
+        }
+
+        this.url = this.url.plus("/$variable")
+        return this
+    }
+
     override fun param(key: String, value: String): IHttpRequestBuilder {
         params[key] = value
 
