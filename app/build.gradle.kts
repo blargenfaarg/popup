@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -5,6 +8,8 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
+
+android.buildFeatures.buildConfig=true
 
 secrets {
     propertiesFileName = "secrets.properties"
@@ -26,6 +31,20 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Load the API key from secret.properties
+        val secretPropertiesFile = rootProject.file("secret.properties")
+        val secretProperties = Properties()
+        if (secretPropertiesFile.exists()) {
+            secretProperties.load(FileInputStream(secretPropertiesFile))
+        }
+
+        // Create a BuildConfig field for the API key
+        buildConfigField(
+            type = "String",
+            name = "MAPS_API_KEY",
+            value ="\"${secretProperties["MAPS_API_KEY"]}\""
+        )
     }
 
     buildTypes {
@@ -118,6 +137,7 @@ dependencies {
     // Google Maps Compose widgets library
     implementation(libs.maps.compose.widgets)
     implementation(libs.places)
+    implementation(libs.google.maps.services)
 }
 
 kapt {

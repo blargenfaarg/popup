@@ -181,6 +181,16 @@ class ApiService(
         return buildApiResponse<Array<Post>>(response)
     }
 
+    override suspend fun getPost(id: Long): ApiResponse<Post> {
+        val response = OkHttpRequestBuilder.builder()
+            .get(url = ApiRoutes.POSTS_GET)
+            .header("Authorization", "Bearer $sessionToken")
+            .pathVariable(variable = id.toString())
+            .send()
+
+        return buildApiResponse<Post>(response)
+    }
+
     override suspend fun updatePost(request: UpdatePostRequest, images: MutableList<File>?): ApiResponse<Post> {
         val rb = OkHttpRequestBuilder.builder()
             .put(url = ApiRoutes.POSTS_UPDATE)

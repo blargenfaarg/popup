@@ -18,4 +18,6 @@ object UiConstants {
 
     val BUTTON_HORIZONTAL_PADDING = 20.dp
     val BUTTON_ROUNDED_CORNER_RADIUS = 8.dp
+
+    val DEFAULT_IMAGE_URL = "https://pop-up.s3.us-west-1.amazonaws.com/default-image.jpg"
 }
