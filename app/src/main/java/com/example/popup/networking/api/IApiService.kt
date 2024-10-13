@@ -95,6 +95,14 @@ interface IApiService {
     suspend fun getPosts(id: Long): ApiResponse<Array<Post>>
 
     /**
+     * Get the post that is identified by the provided id
+     *
+     * @param id the id of the post to find
+     * @return api response containing either the post found, or an error response
+     */
+    suspend fun getPost(id: Long): ApiResponse<Post>
+
+    /**
      * Send an update post request to the api
      *
      * @param request the update post request with the updated information

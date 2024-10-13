@@ -64,7 +64,7 @@ class LoginViewModel @Inject constructor(
             try {
                 val response = apiService.loginUser(request = LoginUserRequest(username, password))
                 when (response.wasSuccessful()) {
-                    true -> navigationHandler.navigateToRoute(UiRoutes.MAP_SCREEN, clearStack = true)
+                    true -> navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, clearStack = true)
                     false -> sendUiEventToChannel(LOGIN_ERROR_EVENT)
                 }
             } finally {

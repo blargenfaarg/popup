@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -58,7 +59,6 @@ import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.clearFocusOnTap
-import com.google.maps.android.compose.GoogleMap
 
 /**
  * The main view for the sign up screen
@@ -403,6 +403,7 @@ fun PersonalInformationSignUpView(
             )
         }
         ProfileImage(
+            defaultPicture = Icons.Filled.CameraAlt,
             onPick = { file ->
                 viewModel.onEvent(
                     SignUpViewEvent.OnProfilePictureChanged(picture = file)

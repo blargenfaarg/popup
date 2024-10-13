@@ -21,9 +21,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.popup.ui.util.UiRoutes.CREATE_NAME_SCREEN
 
+
 @Composable
 fun CreateScreen(
-    navController: NavController
 ) {
     Box(
         modifier = Modifier
@@ -43,17 +43,11 @@ fun CreateScreen(
             )
         }
 
-        Row(modifier = Modifier
-            .align(Alignment.BottomCenter)
-        ) {
-            LoadNavBar(navController = navController)
-        }
-
     }
 }
 
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen(navController = rememberNavController())
+    CreateScreen()
 }

@@ -1,5 +1,6 @@
 package com.example.popup.di
 
+import com.example.popup.di.location.LocationHandler
 import com.example.popup.networking.api.ApiService
 import com.example.popup.networking.api.IApiService
 import dagger.Module
@@ -28,5 +29,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideNavigationHandler(): NavigationHandler = NavigationHandler()
+
+    @Provides
+    @Singleton
+    fun provideLocationHandler(): LocationHandler = LocationHandler()
 
 }
