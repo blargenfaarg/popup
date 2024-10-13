@@ -2,14 +2,11 @@ package com.example.popup.ui.screens.map
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
@@ -22,7 +19,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +32,7 @@ import com.example.popup.model.domain.User
 import com.example.popup.model.domain.common.Location
 import com.example.popup.model.domain.common.PostType
 import com.example.popup.model.domain.common.UTCTime
-import com.example.popup.ui.reusable.ProfileImage
+import com.example.popup.ui.reusable.SwipeImageCollection
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -154,35 +150,34 @@ fun MapView(
 fun PostPopUp(
     post: Post?
 ) {
-    if (post == null) {
-        return
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
+    post?.let {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            ProfileImage(
-                defaultPicture = Icons.Filled.Person,
-                image = post.owner.imageUrl,
-                size = 80.dp
+            Text(
+                text = it.title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
             )
-            Spacer(
-                modifier = Modifier.width(15.dp)
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            SwipeImageCollection(
+                images = it.pictures,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
             )
-            Column {
+
+            it.description?.let {
                 Text(
-                    text = post.title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    text = it,
+                    fontSize = 16.sp
                 )
             }
         }
-
     }
 }
 

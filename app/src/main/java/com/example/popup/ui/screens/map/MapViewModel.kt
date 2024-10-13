@@ -1,6 +1,5 @@
 package com.example.popup.ui.screens.map
 
-import android.location.Location as AndroidLocation
 import androidx.lifecycle.viewModelScope
 import com.example.popup.di.location.ILocationUpdatedListener
 import com.example.popup.di.location.LocationHandler
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import android.location.Location as AndroidLocation
 
 /**
  * The map screen view model
@@ -85,8 +85,20 @@ class MapViewModel @Inject constructor(
     override fun onEvent(event: MapViewEvent) {
         when (event) {
             is MapViewEvent.MapBoundsChanged -> getPostMapDataForBound(event.bounds)
-            is MapViewEvent.PostClicked -> {
+            is MapViewEvent.PostClicked -> postMarkerClicked(event.id)
+        }
+    }
 
+    /**
+     * Handle when a post map marker has been clicked
+     */
+    private fun postMarkerClicked(id: Long) {
+        viewModelScope.launch {
+            val response = apiService.getPost(id)
+
+            if (response.wasSuccessful()) {
+                postToShow = response.data!!
+                _showPopupDetail.value = true
             }
         }
     }
