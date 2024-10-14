@@ -30,6 +30,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.popup.R
 import com.example.popup.ui.theme.Poiple
+import com.example.popup.ui.theme.PopUpLightBlue
 import com.example.popup.ui.util.UiConstants
 import kotlinx.coroutines.Dispatchers
 
@@ -96,7 +97,7 @@ fun SwipeImageCollection(
                     ) {
                         repeat(images.size) { imgNum ->
                            val color = when(imagePagerState.currentPage) {
-                               imgNum -> Poiple
+                               imgNum -> PopUpLightBlue
                                else -> Color.Gray
                            }
                             val width = when(imagePagerState.currentPage) {
