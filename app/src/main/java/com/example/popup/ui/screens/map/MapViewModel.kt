@@ -53,7 +53,12 @@ class MapViewModel @Inject constructor(
     /**
      * The post to show the details for
      */
-    var postToShow: Post? = null
+    private val _postToShow = MutableStateFlow<Post?>(null)
+    var postToShow = _postToShow.asStateFlow()
+    private val _errorLoadingPost = MutableStateFlow(false)
+    var errorLoadingPost = _errorLoadingPost.asStateFlow()
+
+    private var previousMapBounds: LatLngBounds? = null
 
     /**
      * Default constructor
@@ -84,8 +89,11 @@ class MapViewModel @Inject constructor(
      */
     override fun onEvent(event: MapViewEvent) {
         when (event) {
-            is MapViewEvent.MapBoundsChanged -> getPostMapDataForBound(event.bounds)
+            is MapViewEvent.MapBoundsChanged -> handleCameraBoundsChanged(event.bounds)
             is MapViewEvent.PostClicked -> postMarkerClicked(event.id)
+            is MapViewEvent.PopupSheetDismissed -> {
+                _showPopupDetail.value = false
+            }
         }
     }
 
@@ -93,14 +101,34 @@ class MapViewModel @Inject constructor(
      * Handle when a post map marker has been clicked
      */
     private fun postMarkerClicked(id: Long) {
+        _errorLoadingPost.value = false
+        _postToShow.value = null
+        _showPopupDetail.value = true
+
         viewModelScope.launch {
             val response = apiService.getPost(id)
 
             if (response.wasSuccessful()) {
-                postToShow = response.data!!
+                _postToShow.value = response.data!!
                 _showPopupDetail.value = true
+            } else {
+                _errorLoadingPost.value = true
             }
         }
+    }
+
+    /**
+     * Checks if the bounds have changed significantly or not
+     */
+    private fun handleCameraBoundsChanged(bounds: LatLngBounds) {
+        if (previousMapBounds == null) {
+            previousMapBounds = bounds
+            getPostMapDataForBound(bounds)
+            return
+        }
+
+        previousMapBounds = bounds
+        getPostMapDataForBound(bounds)
     }
 
     /**
