@@ -91,6 +91,21 @@ class MainActivity : ComponentActivity() {
     companion object {
         lateinit var appContext: Context
     }
+
+    /**
+     * From the Coil image library - setup an image cache
+     */
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.25)
+                    .build()
+            }
+            .logger(DebugLogger())
+            .respectCacheHeaders(false)
+            .build()
+    }
 }
 
 /**
