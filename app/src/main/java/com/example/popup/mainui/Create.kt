@@ -51,13 +51,6 @@ fun CreateScreen(
                 text = { Text(text = "Create Event") },
             )
         }
-
-        Row(modifier = Modifier
-            .align(Alignment.BottomCenter)
-        ) {
-            LoadNavBar(navController = navController)
-        }
-
     }
 }
 
