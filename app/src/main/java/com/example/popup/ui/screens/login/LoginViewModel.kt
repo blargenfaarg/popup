@@ -11,6 +11,8 @@ import com.example.popup.ui.util.APopUpViewModel
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.UiRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,7 +39,8 @@ class LoginViewModel @Inject constructor(
     var username by mutableStateOf("")
     var password by mutableStateOf("")
 
-    var loading by mutableStateOf(false)
+    private var _loading = MutableStateFlow(false)
+    var loading = _loading.asStateFlow()
 
     /**
      * Receive an event from the UI and decide what to do with it
@@ -58,17 +61,17 @@ class LoginViewModel @Inject constructor(
      * login was successful, sends event to move to the next screen, otherwise shows an error
      */
     private fun attemptLoginUser() {
-        loading = true
+        _loading.value = true
 
         viewModelScope.launch {
             try {
                 val response = apiService.loginUser(request = LoginUserRequest(username, password))
                 when (response.wasSuccessful()) {
-                    true -> navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, clearStack = true)
+                    true -> navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, true)
                     false -> sendUiEventToChannel(LOGIN_ERROR_EVENT)
                 }
             } finally {
-                loading = false
+                _loading.value = false
             }
         }
     }
