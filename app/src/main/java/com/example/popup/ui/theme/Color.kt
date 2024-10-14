@@ -14,3 +14,7 @@ val BluePrimary = Color(0xFF0467F1)
 val TextPrimary = Color(0xFFE7ECF1)
 val GrayOutlinePrimary = Color(0xFF848484)
 val GrayOutlineSecondary = Color(0xFFD9D9D9)
+
+val PopUpLightGray = Color(229, 229, 234)
+
+val Poiple = Color(0xff5952ff)
