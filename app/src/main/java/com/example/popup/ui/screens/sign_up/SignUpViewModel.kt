@@ -113,6 +113,12 @@ class SignUpViewModel @Inject constructor(
      * Handle when the user submits the otp code
      */
     private fun handleOtpVerify(code: String) {
+        if (loading) {
+            return
+        }
+
+        loading = true
+
         viewModelScope.launch {
             val request = OtpVerifyRequest(
                 email = email,
@@ -132,6 +138,8 @@ class SignUpViewModel @Inject constructor(
                     }
                 }
             }
+
+            loading = false
         }
     }
 
@@ -140,6 +148,10 @@ class SignUpViewModel @Inject constructor(
      * and ensure no duplicate username or email, and then let them move on
      */
     private fun handleGetStarted() {
+        if (loading) {
+            return
+        }
+
         loading = true
 
         viewModelScope.launch {
@@ -191,6 +203,10 @@ class SignUpViewModel @Inject constructor(
      * part, but just in case, handle any errors here
      */
     private fun createUserAccount() {
+        if (loading) {
+            return
+        }
+
         loading = true
 
         viewModelScope.launch {

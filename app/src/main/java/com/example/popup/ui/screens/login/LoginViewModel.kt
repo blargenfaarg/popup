@@ -42,6 +42,8 @@ class LoginViewModel @Inject constructor(
     private var _loading = MutableStateFlow(false)
     var loading = _loading.asStateFlow()
 
+    private var loggedIn = false
+
     /**
      * Receive an event from the UI and decide what to do with it
      */
@@ -61,13 +63,20 @@ class LoginViewModel @Inject constructor(
      * login was successful, sends event to move to the next screen, otherwise shows an error
      */
     private fun attemptLoginUser() {
+        if (_loading.value || loggedIn) {
+            return
+        }
+
         _loading.value = true
 
         viewModelScope.launch {
             try {
                 val response = apiService.loginUser(request = LoginUserRequest(username, password))
                 when (response.wasSuccessful()) {
-                    true -> navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, true)
+                    true -> {
+                        loggedIn = true
+                        navigationHandler.navigateToRoute(UiRoutes.MAIN_SCREEN, true)
+                    }
                     false -> sendUiEventToChannel(LOGIN_ERROR_EVENT)
                 }
             } finally {

@@ -35,7 +35,6 @@ import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.reusable.PopUpProtectedTextField
 import com.example.popup.ui.reusable.PopUpSecondaryButton
 import com.example.popup.ui.reusable.PopUpTextField
-import com.example.popup.ui.theme.BluePrimary
 import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.PopUpLightBlue
 import com.example.popup.ui.theme.PopupTheme

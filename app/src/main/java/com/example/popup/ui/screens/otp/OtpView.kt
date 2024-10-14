@@ -22,11 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.popup.ui.reusable.PopUpPrimaryButton
 import com.example.popup.ui.screens.sign_up.SignUpViewPageHeading
+import com.example.popup.ui.theme.GrayOutlinePrimary
 
 @Composable
 fun OtpView(
@@ -83,7 +83,7 @@ fun OtpView(
                             modifier = Modifier
                                 .width(40.dp)
                                 .height(1.5.dp)
-                                .background(Color.Black)
+                                .background(GrayOutlinePrimary)
                         )
                     }
                 }
@@ -95,6 +95,7 @@ fun OtpView(
         )
 
         PopUpPrimaryButton(
+            buttonHorizontalPadding = 0.dp,
             modifier = Modifier
                 .fillMaxWidth(),
             onClick = {
