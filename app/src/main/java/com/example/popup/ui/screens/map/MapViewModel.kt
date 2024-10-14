@@ -15,8 +15,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 import android.location.Location as AndroidLocation
 
 /**
@@ -121,14 +125,14 @@ class MapViewModel @Inject constructor(
      * Checks if the bounds have changed significantly or not
      */
     private fun handleCameraBoundsChanged(bounds: LatLngBounds) {
-        if (previousMapBounds == null) {
-            previousMapBounds = bounds
-            getPostMapDataForBound(bounds)
-            return
-        }
+        val shouldQuery = previousMapBounds?.let {
+            haveBoundsSignificantlyChanged(it, bounds)
+        } ?: true
 
-        previousMapBounds = bounds
-        getPostMapDataForBound(bounds)
+        if (shouldQuery) {
+            getPostMapDataForBound(bounds)
+            previousMapBounds = bounds
+        }
     }
 
     /**
@@ -150,11 +154,9 @@ class MapViewModel @Inject constructor(
 
             val result = apiService.getPostMapData(request)
             if (result.wasSuccessful() && result.data != null) {
-                // Merge the two sets of markers
-                val updatedMarkers = result.data.toSet()
-                updatedMarkers.plus(_postMarkers.value)
-
-                _postMarkers.value = updatedMarkers
+                _postMarkers.update { currentMarkers ->
+                    currentMarkers + result.data.toSet()
+                }
             }
         }
     }
@@ -164,5 +166,48 @@ class MapViewModel @Inject constructor(
      */
     override fun locationUpdated(location: AndroidLocation) {
         _userLocation.value = LatLng(location.latitude, location.longitude)
+    }
+
+    /**
+     * Check if two lat lng bounds are significantly different (in this case, their area difference
+     * ration is less than the threshold). Done to avoid spamming the api service as we poll
+     * the google map camera position
+     */
+    private fun haveBoundsSignificantlyChanged(
+        bounds1: LatLngBounds,
+        bounds2: LatLngBounds,
+        threshold: Double = 0.25
+    ): Boolean {
+        // get the northeast intersection, this should be the smaller of the two
+        val intersectionNE = LatLng(
+            min(bounds1.northeast.latitude, bounds2.northeast.latitude),
+            min(bounds1.northeast.longitude, bounds2.northeast.longitude)
+        )
+        // get the southwest intersection, this should be the max of the two
+        val intersectionSW = LatLng(
+            max(bounds1.southwest.latitude, bounds2.southwest.latitude),
+            max(bounds1.southwest.longitude, bounds2.southwest.longitude)
+        )
+
+        // handle the case where the bounds are completely different, e.g. the points have no
+        // overlapping area
+        if (intersectionNE.latitude < intersectionSW.latitude
+            || intersectionNE.longitude < intersectionSW.longitude) {
+            return true
+        }
+
+        // inner function to calculate the area
+        fun area(bounds: LatLngBounds): Double {
+            val width = abs(bounds.northeast.longitude - bounds.southwest.longitude)
+            val height = abs(bounds.northeast.latitude - bounds.southwest.latitude)
+            return width * height
+        }
+
+        // Get the areas (compare to the smaller of the two areas for better accuracy
+        val intersectionArea = area(LatLngBounds(intersectionSW, intersectionNE))
+        val smallerArea = min(area(bounds1), area(bounds2))
+
+        // Return true if significantly different
+        return  ((intersectionArea / smallerArea) < (1 - threshold))
     }
 }

@@ -114,7 +114,7 @@ fun MapView(
             .collect { _ ->
                 if (!cameraPositionState.isMoving) {
                     coroutineScope.launch {
-                        delay(1500)
+                        delay(750)
                         val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
                         bounds?.let {
                             viewModel.onEvent(MapViewEvent.MapBoundsChanged(it))
