@@ -3,6 +3,7 @@ package com.example.popup.ui.reusable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.example.popup.ui.util.UiConstants
 
 /**
@@ -69,6 +71,7 @@ fun PopUpTextField(
                 )
             }
         },
+        shape = RoundedCornerShape(UiConstants.TEXT_FIELD_CORNER_RADIUS),
         isError = isError,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions
@@ -114,6 +117,7 @@ fun PopUpProtectedTextField(
                     }
             )
         },
+        shape = RoundedCornerShape(UiConstants.TEXT_FIELD_CORNER_RADIUS),
         isError = isError,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions
