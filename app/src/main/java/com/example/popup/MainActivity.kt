@@ -17,9 +17,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.popup.ui.screens.login.LoginView
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import coil.memory.MemoryCache
+import coil.util.DebugLogger
 import com.example.popup.di.NavigationHandler
 import com.example.popup.di.location.LocationHandler
+import com.example.popup.ui.screens.login.LoginView
 import com.example.popup.ui.screens.main.MainView
 import com.example.popup.ui.screens.sign_up.SignUpView
 import com.example.popup.ui.theme.PopupTheme
@@ -30,7 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), ImageLoaderFactory {
 
     @Inject
     lateinit var navigationHandler: NavigationHandler
