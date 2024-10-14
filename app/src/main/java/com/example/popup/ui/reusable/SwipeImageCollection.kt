@@ -1,5 +1,6 @@
 package com.example.popup.ui.reusable
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -10,19 +11,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import com.example.popup.R
+import com.example.popup.ui.theme.Poiple
 import com.example.popup.ui.util.UiConstants
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Re-usable composable for showing a pictures in a horizontal swiping fashion
@@ -36,15 +45,22 @@ fun SwipeImageCollection(
     images: List<String>?,
     modifier: Modifier
 ) {
+    val context = LocalContext.current
+
     Box(
         modifier = modifier
     ) {
         if (images.isNullOrEmpty()) {
             AsyncImage(
-                model = UiConstants.DEFAULT_IMAGE_URL,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(13.dp)),
+                model = buildCoilImageRequest(
+                    imageUrl = UiConstants.DEFAULT_IMAGE_URL,
+                    context = context
+                ),
                 contentDescription = "No images available",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                contentScale = ContentScale.Crop
             )
         } else {
             val imagePagerState = rememberPagerState(pageCount = {images.size})
@@ -54,10 +70,15 @@ fun SwipeImageCollection(
             ) {
                 HorizontalPager(
                     state = imagePagerState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(13.dp))
                 ) { page ->
                     AsyncImage(
-                        model = images[page],
+                        model = buildCoilImageRequest(
+                            imageUrl = images[page],
+                            context = context
+                        ),
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -68,27 +89,29 @@ fun SwipeImageCollection(
                 if (images.size > 1) {
                     Row(
                         modifier = Modifier
-                            .height(50.dp)
+                            .height(20.dp)
                             .fillMaxWidth()
                             .align(Alignment.BottomCenter),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         repeat(images.size) { imgNum ->
                            val color = when(imagePagerState.currentPage) {
-                               imgNum -> Color.White
-                               else -> Color.Transparent
+                               imgNum -> Poiple
+                               else -> Color.Gray
                            }
+                            val width = when(imagePagerState.currentPage) {
+                                imgNum -> 20.dp
+                                else -> 8.dp
+                            }
 
                             Box(
                                 modifier = Modifier
                                     .padding(2.dp)
-                                    .clip(CircleShape)
+                                    .clip(RoundedCornerShape(8.dp))
                                     .background(color)
-                                    .border(
-                                        width = 1.dp,
-                                        color = Color.White
-                                    )
-                                    .size(8.dp)
+                                    .width(width)
+                                    .height(8.dp)
+
                             )
                         }
                     }
@@ -96,6 +119,21 @@ fun SwipeImageCollection(
             }
         }
     }
+}
+
+fun buildCoilImageRequest(
+    imageUrl: String?,
+    context: Context
+): ImageRequest {
+    return ImageRequest.Builder(context)
+        .data(imageUrl)
+        .dispatcher(Dispatchers.IO)
+        .memoryCacheKey(imageUrl)
+        .placeholder(R.drawable.placeholder)
+        .error(R.drawable.loading_failed)
+        .fallback(R.drawable.placeholder)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .build()
 }
 
 @Composable
@@ -109,8 +147,20 @@ fun SwipeImageCollectionPreview(
         "https://pop-up.s3.us-west-1.amazonaws.com/UID2/PID1/music-event-1.jpg"
     )
 
-    SwipeImageCollection(
-        images = testImages,
+    Box(
         modifier = Modifier
-    )
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+        ) {
+            SwipeImageCollection(
+                images = testImages,
+                modifier = Modifier
+            )
+        }
+    }
 }
