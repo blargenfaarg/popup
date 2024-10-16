@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,9 +58,9 @@ import com.example.popup.ui.screens.otp.OtpView
 import com.example.popup.ui.theme.BluePrimary
 import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
+import com.example.popup.ui.theme.PopUpLightBlue
 import com.example.popup.ui.util.UiEvent
 import com.example.popup.ui.util.clearFocusOnTap
-import com.google.maps.android.compose.GoogleMap
 
 /**
  * The main view for the sign up screen
@@ -162,7 +164,7 @@ fun SignUpView(
                     onClick = {
                         viewModel.onEvent(event = SignUpViewEvent.OnNextArrowClicked)
                     },
-                    containerColor = BluePrimary,
+                    containerColor = PopUpLightBlue,
                     contentColor = GrayOutlineSecondary,
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
@@ -283,11 +285,11 @@ fun GetStartedSignUpView(
             .fillMaxSize()
     ) {
         Text(
-            text = "Login",
-            color = BluePrimary,
+            text = "Return to Login",
+            color = PopUpLightBlue,
             fontSize = 18.sp,
             textDecoration = TextDecoration.Underline,
-            fontWeight = FontWeight.SemiBold,
+            fontStyle = FontStyle.Italic,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(20.dp)
@@ -357,9 +359,9 @@ fun PreferenceSelection(
                 )
             }
             .padding(8.dp),
-        color = if (selected) BluePrimary else GrayOutlineSecondary,
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, color = GrayOutlineSecondary)
+        color = if (selected) PopUpLightBlue else GrayOutlinePrimary,
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, color = if (selected) PopUpLightBlue else GrayOutlineSecondary)
     ) {
         Box(
             modifier = Modifier
@@ -403,6 +405,7 @@ fun PersonalInformationSignUpView(
             )
         }
         ProfileImage(
+            defaultPicture = Icons.Filled.CameraAlt,
             onPick = { file ->
                 viewModel.onEvent(
                     SignUpViewEvent.OnProfilePictureChanged(picture = file)

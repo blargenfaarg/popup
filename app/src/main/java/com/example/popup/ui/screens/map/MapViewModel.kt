@@ -1,9 +1,9 @@
 package com.example.popup.ui.screens.map
 
-import android.location.Location as AndroidLocation
 import androidx.lifecycle.viewModelScope
 import com.example.popup.di.location.ILocationUpdatedListener
 import com.example.popup.di.location.LocationHandler
+import com.example.popup.model.domain.Post
 import com.example.popup.model.domain.common.Location
 import com.example.popup.model.request.post.GetMapDataRequest
 import com.example.popup.model.response.PostMapData
@@ -15,8 +15,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
+import android.location.Location as AndroidLocation
 
 /**
  * The map screen view model
@@ -42,6 +47,22 @@ class MapViewModel @Inject constructor(
      */
     private val _userLocation = MutableStateFlow(LatLng(0.0, 0.0))
     val userLocation: StateFlow<LatLng> = _userLocation.asStateFlow()
+
+    /**
+     * Track if we should show the bottom sheet pop-up
+     */
+    private val _showPopupDetail = MutableStateFlow(false)
+    val showPopupDetail = _showPopupDetail.asStateFlow()
+
+    /**
+     * The post to show the details for
+     */
+    private val _postToShow = MutableStateFlow<Post?>(null)
+    var postToShow = _postToShow.asStateFlow()
+    private val _errorLoadingPost = MutableStateFlow(false)
+    var errorLoadingPost = _errorLoadingPost.asStateFlow()
+
+    private var previousMapBounds: LatLngBounds? = null
 
     /**
      * Default constructor
@@ -72,8 +93,45 @@ class MapViewModel @Inject constructor(
      */
     override fun onEvent(event: MapViewEvent) {
         when (event) {
-            is MapViewEvent.MapBoundsChanged -> getPostMapDataForBound(event.bounds)
-            is MapViewEvent.PostClicked -> TODO()
+            is MapViewEvent.MapBoundsChanged -> handleCameraBoundsChanged(event.bounds)
+            is MapViewEvent.PostClicked -> postMarkerClicked(event.id)
+            is MapViewEvent.PopupSheetDismissed -> {
+                _showPopupDetail.value = false
+            }
+        }
+    }
+
+    /**
+     * Handle when a post map marker has been clicked
+     */
+    private fun postMarkerClicked(id: Long) {
+        _errorLoadingPost.value = false
+        _postToShow.value = null
+        _showPopupDetail.value = true
+
+        viewModelScope.launch {
+            val response = apiService.getPost(id)
+
+            if (response.wasSuccessful()) {
+                _postToShow.value = response.data!!
+                _showPopupDetail.value = true
+            } else {
+                _errorLoadingPost.value = true
+            }
+        }
+    }
+
+    /**
+     * Checks if the bounds have changed significantly or not
+     */
+    private fun handleCameraBoundsChanged(bounds: LatLngBounds) {
+        val shouldQuery = previousMapBounds?.let {
+            haveBoundsSignificantlyChanged(it, bounds)
+        } ?: true
+
+        if (shouldQuery) {
+            getPostMapDataForBound(bounds)
+            previousMapBounds = bounds
         }
     }
 
@@ -96,11 +154,9 @@ class MapViewModel @Inject constructor(
 
             val result = apiService.getPostMapData(request)
             if (result.wasSuccessful() && result.data != null) {
-                // Merge the two sets of markers
-                val updatedMarkers = result.data.toSet()
-                updatedMarkers.plus(_postMarkers.value)
-
-                _postMarkers.value = updatedMarkers
+                _postMarkers.update { currentMarkers ->
+                    currentMarkers + result.data.toSet()
+                }
             }
         }
     }
@@ -110,5 +166,48 @@ class MapViewModel @Inject constructor(
      */
     override fun locationUpdated(location: AndroidLocation) {
         _userLocation.value = LatLng(location.latitude, location.longitude)
+    }
+
+    /**
+     * Check if two lat lng bounds are significantly different (in this case, their area difference
+     * ration is less than the threshold). Done to avoid spamming the api service as we poll
+     * the google map camera position
+     */
+    private fun haveBoundsSignificantlyChanged(
+        bounds1: LatLngBounds,
+        bounds2: LatLngBounds,
+        threshold: Double = 0.25
+    ): Boolean {
+        // get the northeast intersection, this should be the smaller of the two
+        val intersectionNE = LatLng(
+            min(bounds1.northeast.latitude, bounds2.northeast.latitude),
+            min(bounds1.northeast.longitude, bounds2.northeast.longitude)
+        )
+        // get the southwest intersection, this should be the max of the two
+        val intersectionSW = LatLng(
+            max(bounds1.southwest.latitude, bounds2.southwest.latitude),
+            max(bounds1.southwest.longitude, bounds2.southwest.longitude)
+        )
+
+        // handle the case where the bounds are completely different, e.g. the points have no
+        // overlapping area
+        if (intersectionNE.latitude < intersectionSW.latitude
+            || intersectionNE.longitude < intersectionSW.longitude) {
+            return true
+        }
+
+        // inner function to calculate the area
+        fun area(bounds: LatLngBounds): Double {
+            val width = abs(bounds.northeast.longitude - bounds.southwest.longitude)
+            val height = abs(bounds.northeast.latitude - bounds.southwest.latitude)
+            return width * height
+        }
+
+        // Get the areas (compare to the smaller of the two areas for better accuracy
+        val intersectionArea = area(LatLngBounds(intersectionSW, intersectionNE))
+        val smallerArea = min(area(bounds1), area(bounds2))
+
+        // Return true if significantly different
+        return  ((intersectionArea / smallerArea) < (1 - threshold))
     }
 }

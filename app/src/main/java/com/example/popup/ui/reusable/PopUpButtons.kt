@@ -3,7 +3,6 @@ package com.example.popup.ui.reusable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.TextPrimary
 import com.example.popup.ui.util.UiConstants
-import kotlin.coroutines.coroutineContext
 
 /**
  * Custom buttons to use in the pop-up application. There are two buttons:

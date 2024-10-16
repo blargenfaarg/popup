@@ -7,6 +7,9 @@ import androidx.compose.ui.graphics.Color
 import com.example.popup.ui.theme.BluePrimary
 import com.example.popup.ui.theme.GrayOutlinePrimary
 import com.example.popup.ui.theme.GrayOutlineSecondary
+import com.example.popup.ui.theme.Poiple
+import com.example.popup.ui.theme.PopUpLightBlue
+import com.example.popup.ui.theme.PopUpLightGray
 import com.example.popup.ui.theme.TextPrimary
 
 /**
@@ -18,8 +21,8 @@ import com.example.popup.ui.theme.TextPrimary
  */
 @Composable
 fun popUpPrimaryButtonColors(
-    backgroundColor: Color = BluePrimary,
-    contentColor: Color = TextPrimary,
+    backgroundColor: Color = PopUpLightBlue,
+    contentColor: Color = PopUpLightGray,
     disabledBackgroundColor: Color = GrayOutlinePrimary,
     disabledContentColor: Color = GrayOutlineSecondary
 ) = ButtonDefaults.buttonColors(

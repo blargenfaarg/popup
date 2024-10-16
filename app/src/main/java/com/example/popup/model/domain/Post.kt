@@ -18,7 +18,7 @@ data class Post(
     val location: Location,
     val distance: Double? = null,
     val type: PostType,
-    val pictures: MutableList<String>? = mutableListOf(),
+    val pictures: List<String>? = listOf(),
     val postTime: UTCTime,
     val startTime: UTCTime,
     val endTime: UTCTime,

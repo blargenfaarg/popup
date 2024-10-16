@@ -15,7 +15,10 @@ object UiConstants {
 
     val TEXT_FIELD_INTERIOR_PADDING = 15.dp
     val TEXT_FIELD_HORIZONTAL_PADDING = 20.dp
+    val TEXT_FIELD_CORNER_RADIUS = 16.dp
 
     val BUTTON_HORIZONTAL_PADDING = 20.dp
-    val BUTTON_ROUNDED_CORNER_RADIUS = 8.dp
+    val BUTTON_ROUNDED_CORNER_RADIUS = 16.dp
+
+    val DEFAULT_IMAGE_URL = "https://pop-up.s3.us-west-1.amazonaws.com/default-image.jpg"
 }
